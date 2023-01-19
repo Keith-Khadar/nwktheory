@@ -1,7 +1,7 @@
 # NWKTheory
 
 ## Project Description
-NWKtheory is based on the theory, six degrees of separation. This theory states that any person on the planet can be connected to any other person through a chain of no more than five friends and acquaintances. 
+NWKTheory is based on the theory, six degrees of separation. This theory states that any person on the planet can be connected to any other person through a chain of no more than five friends and acquaintances. 
 
 This project aims to test this theory by providing users an easy way to connect with others by creating a visualization of their personal network.
 
