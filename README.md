@@ -19,9 +19,6 @@ The home page will be the graph visualization of your network. Here on the home 
 * Create mobile ports for use on phones (Android, Apple)
 * NFC phone tap connect for easier connection with others
 
-### Trello Roadmap
-Link: https://trello.com/b/TFS7oSA7/roadmap 
-
 ## Members
 ### Front-end Engineers
 * Keith Khadar
