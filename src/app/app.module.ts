@@ -7,13 +7,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Auth0 Import the module from the SDK
 import { AuthModule } from '@auth0/auth0-angular';
-import { AuthButtonComponent } from './auth-button/auth-button.component'; 
+import { AuthButtonComponent } from './auth-button/auth-button.component';
+import { UserProfileComponent } from './user-profile/user-profile.component'; 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    AuthButtonComponent
+    AuthButtonComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,
