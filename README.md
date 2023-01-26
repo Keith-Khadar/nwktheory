@@ -1,28 +1,19 @@
-# NWKTheory
+# Angular + Golang Starter Kit
 
-## Project Description
-NWKTheory is based on the theory, six degrees of separation. This theory states that any person on the planet can be connected to any other person through a chain of no more than five friends and acquaintances. 
+**Note:** *I have shifted my focus to development of a CLI tool which can automatically generate a project like this and a lot more things like serve and production build, if you are interested in testing it out or would like to contribute, you may find the project here: https://github.com/anshap1719/nggo. It's written in Golang*
 
-This project aims to test this theory by providing users an easy way to connect with others by creating a visualization of their personal network.
+## Prerequisites
+- You have Angular CLI & npm installed.
+- You have Go installed and GOPATH set up properly.
 
-A user’s connections will be displayed in the form of an undirected graph that can be modified to allow users to see certain connections (ex. Work connections, personal connections). These connections will also be categorized by being given colors to help user’s identify specific connections. Users will also have the ability to use a chat system on the applications to directly interact with each other to help facilitate connections.
+## Before You Begin
+Instead of running `npm install` as you normally would, you need to run `npm run install-dependencies` which will run `npm install` for you in addition to installing the required Go dependencies for this boilerplate project.
 
-The home page will be the graph visualization of your network. Here on the home page you can search your network and apply different filters to view your network in different ways. For example, switching between a work network and a family/friends network. The pages to the left and right will be used for viewing and editing your profile and chatting with people you are connected to. 
+## Run The Project
+`npm start` will run both the Go server (by default at port 4201) and Webpack Dev Server for Angular (at port 4200). `npm start` basically runs the `serve.sh` bash script which in turn starts `ng serve` and Go live server parallely. You can access the app by visiting `http://localhost:4200`.
 
-### Features
-* Search bar
-* Layered “Map” (the graph) 
-  * Presentation approach similar to Prezi
-* Oauth Federated Account access (lets users log in using other online accounts, ex. LinkedIn, Facebook)
-* Prioritize connections based on interactions (similar to pagerank)
-* Create a stand alone application not hosted on the web (use electron)
-* Create mobile ports for use on phones (Android, Apple)
-* NFC phone tap connect for easier connection with others
+**Note:** *The console output for both the client and the server will be printed in the same console window.*
 
-## Members
-### Front-end Engineers
-* Keith Khadar
-* Eric Zhou
-### Back-end Engineers
-* Naresh Panchal
-* Alex Christy
+#### This boilerplate takes care of *Allow-Cross-Origin-Access* errors by default by explicitely allowing the client's address to make cross origin requests
+
+This also means that you will have to edit the code to make it work for production builds. Currently, it is also required that both the client and server be built separately. This boilerplate currently provides a stage only for development purposes with no automatic combined builds. I am working on making it work properly with build and also on adding some customizabilty, so keep an eye out for those.
