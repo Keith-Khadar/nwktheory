@@ -26,10 +26,14 @@ func returnAllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequests() {
-	http.HandleFunc("/", homePage)
+
+	// Create mux router
+	myRouter := mux.newRouter().StrictSlash(true)
+
+	myRouter.HandleFunc("/", homePage)
 
 	// returnAllUsers
-	http.HandleFunc("/users", returnAllUsers)
+	myRouter.HandleFunc("/users", returnAllUsers)
 
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
