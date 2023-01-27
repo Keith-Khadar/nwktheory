@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 // Structs
@@ -28,14 +30,14 @@ func returnAllUsers(w http.ResponseWriter, r *http.Request) {
 func handleRequests() {
 
 	// Create mux router
-	myRouter := mux.newRouter().StrictSlash(true)
+	myRouter := mux.NewRouter().StrictSlash(true)
 
 	myRouter.HandleFunc("/", homePage)
 
 	// returnAllUsers
 	myRouter.HandleFunc("/users", returnAllUsers)
 
-	log.Fatal(http.ListenAndServe(":10000", nil))
+	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
 
 func main() {
