@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"server/storage"
 	"server/util"
@@ -25,9 +26,15 @@ func (s *Server) Start() error {
 	//Create mux router
 	router := mux.NewRouter()
 
+	router.HandleFunc("/", homePage)
 	router.HandleFunc("/user", s.handleGetUserByID)
 	router.HandleFunc("/user/id", s.handleDeleteUserByID)
 	return http.ListenAndServe(s.listenAddr, router)
+}
+
+func homePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Welcome to the HomePage!")
+	fmt.Println("Endpoint Hit: homePage")
 }
 
 func (s *Server) handleGetUserByID(w http.ResponseWriter, r *http.Request) {
