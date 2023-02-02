@@ -10,7 +10,8 @@ func NewMemoryStorage() *MemoryStorage {
 
 func (s *MemoryStorage) Get(id int) *types.User {
 	return &types.User{
-		ID:   1,
-		Name: "Foo",
+		UserID: "123",
+		Name:   "Foo",
+		Email:  "default@example.com",
 	}
 }
