@@ -1,8 +1,9 @@
 package types
 
 type User struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	UserID string `json:"UserId"`
+	Name   string `json:"Name"`
+	Email  string `json:"Email"`
 }
 
 func ValidateUser(u *User) bool { return true }
