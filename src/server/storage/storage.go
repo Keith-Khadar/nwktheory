@@ -3,5 +3,6 @@ package storage
 import "server/types"
 
 type Storage interface {
-	Get(int) *types.User
+	Get(string) *types.User
+	InsertUser(types.User)
 }
