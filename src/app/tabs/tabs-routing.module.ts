@@ -1,8 +1,6 @@
-import { ChatPageModule } from './../chat-page/chat-page.module';
 import { TabsComponent } from './tabs.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TabsModule } from './tabs.module';
 
 
 const routes: Routes = [
