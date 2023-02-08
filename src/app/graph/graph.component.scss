@@ -1,0 +1,8 @@
+#chart-gauge, #chart-pie, #chart-column, #chart-line {
+    display: flex;
+    min-width: 150px;
+    max-width: 400px;
+    height: 200px;
+    margin: 0 auto;
+    flex-direction: row;
+  }

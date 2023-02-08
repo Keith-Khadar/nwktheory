@@ -1,3 +1,4 @@
+import { GraphComponent } from './../graph/graph.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { HomePageComponent } from './home-page.component';
@@ -8,7 +9,7 @@ import { HomePageRoutingModule } from './home-page-routing.module';
 
 
 @NgModule({
-  declarations: [HomePageComponent],
+  declarations: [HomePageComponent, GraphComponent],
   imports: [
     IonicModule,
     CommonModule,
