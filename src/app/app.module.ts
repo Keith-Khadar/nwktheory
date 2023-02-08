@@ -7,15 +7,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Auth0 Import the module from the SDK
 import { AuthModule } from '@auth0/auth0-angular';
-import { AuthButtonComponent } from './auth-button/auth-button.component';
-import { UserProfileComponent } from './user-profile/user-profile.component'; 
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
+import { RouteReuseStrategy } from '@angular/router';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AuthButtonComponent,
-    UserProfileComponent
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -29,9 +29,12 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
       authorizationParams: {
         redirect_uri: window.location.origin
       }
-    })
+    }),
+    
+    IonicModule.forRoot(),
+    AppRoutingModule
   ],
-  providers: [],
+  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

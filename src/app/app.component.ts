@@ -6,6 +6,7 @@ import HighchartsSolidGauge from 'highcharts/modules/solid-gauge';
 HighchartsMore(Highcharts);
 HighchartsSolidGauge(Highcharts);
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -236,9 +237,6 @@ export class AppComponent implements AfterViewInit {
   }
 
   title = 'nwktheory';
-  public isAuthenticated = false;
-
-  public logout(): void{
-    
-  }
+  constructor(){
+  } 
 }
