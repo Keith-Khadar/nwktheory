@@ -60,12 +60,12 @@ func (s *MongoStorage) Get(UserID string) (*types.User, error) {
 func (s *MongoStorage) InsertUser(user types.User) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
-	if types.ValidateUser(&user) == true {
+	if types.ValidateUser(&user) {
 		result, _ := coll.InsertOne(context.TODO(), user)
 		fmt.Printf("Inserted user: [Name: %v, UserID: %v] with _id: %v\n", user.Name, user.UserID, result.InsertedID)
 		return nil
 	} else {
-		return errors.New("Invalid user")
+		return errors.New("invalid user")
 	}
 }
 

@@ -60,7 +60,7 @@ func (s Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
     if err != nil {
 
         // Invalid user submission
-        if strings.Contains(fmt.Sprint(err), "Invalid user") {
+        if strings.Contains(fmt.Sprint(err), "invalid user") {
             w.WriteHeader(http.StatusUnprocessableEntity)
             w.Write([]byte("Invalid user format!"))
 			fmt.Printf("Error: Invalid user format in handleCreateUser")
