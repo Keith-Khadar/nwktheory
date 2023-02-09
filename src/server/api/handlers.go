@@ -46,20 +46,29 @@ func (s *Server) handleGetUserByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleCreateUser")
-	// Get the body of our POST request
-	reqBody, _ := ioutil.ReadAll(r.Body)
+func (s Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("Endpoint Hit: handleCreateUser")
+    // Get the body of our POST request
+    reqBody, _ := ioutil.ReadAll(r.Body)
 
-	// Unmarshal body of POST request into new User struct
-	var user types.User
-	json.Unmarshal(reqBody, &user)
+    // Unmarshal body of POST request into new User struct
+    var user types.User
+    json.Unmarshal(reqBody, &user)
 
-	err := s.store.InsertUser(user)
+    err := s.store.InsertUser(user)
 
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal error see error log!"))
-		fmt.Printf("Error: %v in handleCreateUser for [Name: %v, Email: %v] ", err, user.Name, user.Email)
-	}
+    if err != nil {
+
+        // Invalid user submission
+        if strings.Contains(fmt.Sprint(err), "Invalid user") {
+            w.WriteHeader(http.StatusUnprocessableEntity)
+            w.Write([]byte("Invalid user format!"))
+
+        } else { // Catch all
+            w.WriteHeader(http.StatusInternalServerError)
+            w.Write([]byte("Internal error see error log!"))
+            fmt.Printf("Error: %v in handleCreateUser for [Name: %v, Email: %v] ", err, user.Name, user.Email)
+
+        }
+    }
 }
