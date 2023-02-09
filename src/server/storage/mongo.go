@@ -43,14 +43,14 @@ func NewMongoStorage(DatabaseName string, CollectionName string) *MongoStorage {
 	}
 }
 
-func (s *MongoStorage) Get(UserID string) (*types.User, error) {
+func (s *MongoStorage) Get(Email string) (*types.User, error) {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
 	// Create var to capture data from db
 	var user types.User
 
 	// Filter to find user based on UserID
-	filter := bson.D{{Key: "userid", Value: UserID}}
+	filter := bson.D{{Key: "email", Value: Email}}
 
 	err := coll.FindOne(context.TODO(), filter).Decode(&user)
 
@@ -62,7 +62,7 @@ func (s *MongoStorage) InsertUser(user types.User) error {
 
 	if types.ValidateUser(&user) {
 		result, _ := coll.InsertOne(context.TODO(), user)
-		fmt.Printf("Inserted user: [Name: %v, UserID: %v] with _id: %v\n", user.Name, user.UserID, result.InsertedID)
+		fmt.Printf("Inserted user: [Name: %v, Email: %v] with _id: %v\n", user.Name, user.Email, result.InsertedID)
 		return nil
 	} else {
 		return errors.New("invalid user")
