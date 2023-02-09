@@ -73,3 +73,51 @@ func (s Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
         }
     }
 }
+
+func (s Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: handleCreateUserConnection")
+
+	// Retrieve mux variables from URL
+	vars := mux.Vars(r)
+
+	// Get Email from URL path
+	reqUserEmail := vars["email"]
+
+	// Get the body of our POST request
+	var connection types.Connection
+	json.NewDecoder(r.Body).Decode(&connection)
+
+	user, err := s.store.Get(reqUserEmail)
+
+	// Handle preliminary errors
+	if err != nil {
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			// Return HTTP 404 if user does not exist in db
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("User does not exist!"))
+			fmt.Printf("Error: Invalid user [Email: %v] in handleCreateUserConnection", reqUserEmail)
+
+		} else if strings.Compare(reqUserEmail, connection.SourceUser) != 0 { 
+			// Return HTTP 422 if requested user by email in /users/{email}/connections does not match soureUser in connection
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			w.Write([]byte("Requested user does not match SourceUser in connection!"))
+			fmt.Printf("Error: Requested user [Email: %v] does not match SourceUser [Email: %v] in handleCreateUserConnection", user.Email, connection.SourceUser)
+
+		} else { // Catch all
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal error see error log!"))
+			fmt.Printf("Error: %v in handleCreateUserConnection for [Email: %v]", err, user.Email)
+		}
+
+		return
+	}
+
+	err = s.store.InsertConnection(user.Email, connection)
+
+	// Return error if mongo returns error when inserting a connection
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal error see error log!"))
+			fmt.Printf("Error: %v in handleCreateUserConnection from InsertConnection for [Email: %v]", err, user.Email)
+	}
+}

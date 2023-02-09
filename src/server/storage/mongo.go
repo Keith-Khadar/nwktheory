@@ -69,6 +69,23 @@ func (s *MongoStorage) InsertUser(user types.User) error {
 	}
 }
 
+func (s *MongoStorage) InsertConnection(Email string, connection types.Connection) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+
+	// Select document with Email from function parameter
+	filter := bson.M{"email": Email}
+
+	// Append a connection object to the connections array for user selected by the filter above
+	change := bson.M{"$push":bson.M{"connections":connection}}
+
+	_, err := coll.UpdateOne(context.TODO(), filter, change)
+
+	fmt.Printf("Inserted connection: [SourceUser: %v, DestinationUser: %v, Weight: %v]", connection.SourceUser, 
+		connection.DestinationUser, connection.Weight)
+
+	return err
+}
+
 // Taken from GeeksForGeeks
 // URL: https://www.geeksforgeeks.org/how-to-use-go-with-mongodb/
 // ======================================
