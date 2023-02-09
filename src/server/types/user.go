@@ -7,4 +7,9 @@ type User struct {
 	Connections map[string]float32 `json:"Connections"`
 }
 
-func ValidateUser(u *User) bool { return true }
+func ValidateUser(u *User) bool { 
+	if u.UserID != "" && u.Name != "" && u.Email != "" {
+		return true
+	}
+	return false
+}
