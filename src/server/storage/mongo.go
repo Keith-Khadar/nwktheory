@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"server/types"
 	"time"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -59,15 +60,13 @@ func (s *MongoStorage) Get(UserID string) (*types.User, error) {
 func (s *MongoStorage) InsertUser(user types.User) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
-	result, err := coll.InsertOne(context.TODO(), user)
-
-	if err != nil {
-		return err
-	} else {
+	if types.ValidateUser(&user) == true {
+		result, _ := coll.InsertOne(context.TODO(), user)
 		fmt.Printf("Inserted user: [Name: %v, UserID: %v] with _id: %v\n", user.Name, user.UserID, result.InsertedID)
+		return nil
+	} else {
+		return errors.New("Invalid user")
 	}
-
-	return nil
 }
 
 // Taken from GeeksForGeeks
