@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"server/storage"
 	"server/types"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -43,10 +44,28 @@ func (s *Server) handleGetUserByID(w http.ResponseWriter, r *http.Request) {
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
+	// Get id from URL path
 	id := vars["id"]
 
-	user := s.store.Get(id)
+	user, err := s.store.Get(id)
 
+	if err != nil {
+		
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("User does not exist!"))
+
+		} else { // Catch all 
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal error see error log!"))
+			fmt.Println(err)
+		}
+		// Exit here if error
+		return
+	}
+
+	// No error encode user data
 	json.NewEncoder(w).Encode(user)
 }
 

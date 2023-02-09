@@ -42,7 +42,7 @@ func NewMongoStorage(DatabaseName string, CollectionName string) *MongoStorage {
 	}
 }
 
-func (s *MongoStorage) Get(UserID string) *types.User {
+func (s *MongoStorage) Get(UserID string) (*types.User, error) {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
 	// Create var to capture data from db
@@ -53,12 +53,7 @@ func (s *MongoStorage) Get(UserID string) *types.User {
 
 	err := coll.FindOne(context.TODO(), filter).Decode(&user)
 
-	// Debug code if errors are returned
-	if err != nil {
-		fmt.Println("Error calling Get(UserID) mongoDB command FindOne() failed:", err)
-	}
-
-	return &user
+	return &user, err
 }
 
 func (s *MongoStorage) InsertUser(user types.User) {
