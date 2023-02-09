@@ -56,16 +56,18 @@ func (s *MongoStorage) Get(UserID string) (*types.User, error) {
 	return &user, err
 }
 
-func (s *MongoStorage) InsertUser(user types.User) {
+func (s *MongoStorage) InsertUser(user types.User) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
 	result, err := coll.InsertOne(context.TODO(), user)
 
 	if err != nil {
-		panic(err)
+		return err
 	} else {
 		fmt.Printf("Inserted user: [Name: %v, UserID: %v] with _id: %v\n", user.Name, user.UserID, result.InsertedID)
 	}
+
+	return nil
 }
 
 // Taken from GeeksForGeeks

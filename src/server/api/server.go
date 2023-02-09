@@ -59,7 +59,7 @@ func (s *Server) handleGetUserByID(w http.ResponseWriter, r *http.Request) {
 		} else { // Catch all 
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal error see error log!"))
-			fmt.Println(err)
+			fmt.Printf("Error: %v in handleGetUserByID for [ID: %v]", err, id)
 		}
 		// Exit here if error
 		return
@@ -78,5 +78,11 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	var user types.User
 	json.Unmarshal(reqBody, &user)
 
-	s.store.InsertUser(user)
+	err := s.store.InsertUser(user)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal error see error log!"))
+		fmt.Printf("Error: %v in handleCreateUser for [Name: %v, Email: %v] ", err, user.Name, user.Email)
+	}
 }
