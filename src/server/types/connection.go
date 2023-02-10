@@ -6,4 +6,9 @@ type Connection struct {
 	Weight float32 `json:"Weight"`
 }
 
-func ValidateConnection(c *Connection) bool { return true }
+func ValidateConnection(c *Connection) bool { 
+	if c.SourceUser != "" && c.DestinationUser != "" && c.Weight >= 0.0 {
+		return true
+	}
+	return false
+ }

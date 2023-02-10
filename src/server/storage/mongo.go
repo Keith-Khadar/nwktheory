@@ -75,15 +75,18 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 	// Select document with Email from function parameter
 	filter := bson.M{"email": Email}
 
-	// Append a connection object to the connections array for user selected by the filter above
-	change := bson.M{"$push":bson.M{"connections":connection}}
+	if types.ValidateConnection(&connection) {
+		// Append a connection object to the connections array for user selected by the filter above
+		change := bson.M{"$push":bson.M{"connections":connection}}
 
-	_, err := coll.UpdateOne(context.TODO(), filter, change)
-
-	fmt.Printf("Inserted connection: [SourceUser: %v, DestinationUser: %v, Weight: %v]", connection.SourceUser, 
-		connection.DestinationUser, connection.Weight)
-
-	return err
+		_, err := coll.UpdateOne(context.TODO(), filter, change)
+	
+		fmt.Printf("Inserted connection: [SourceUser: %v, DestinationUser: %v, Weight: %v]", connection.SourceUser, 
+			connection.DestinationUser, connection.Weight)
+		return err
+	} else {
+		return errors.New("invalid connection")
+	}
 }
 
 // Taken from GeeksForGeeks

@@ -46,7 +46,7 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func (s Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Endpoint Hit: handleCreateUser")
     // Get the body of our POST request
     reqBody, _ := ioutil.ReadAll(r.Body)
@@ -74,7 +74,7 @@ func (s Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-func (s Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: handleCreateUserConnection")
 
 	// Retrieve mux variables from URL
@@ -116,8 +116,15 @@ func (s Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reques
 
 	// Return error if mongo returns error when inserting a connection
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		if  strings.Contains(fmt.Sprint(err), "invalid connection") {
+			// Return HTTP 422 if requested connection to add is invalid
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			w.Write([]byte("Invalid connection format!"))
+			fmt.Printf("Error: Invalid connection format in handleCreateUserConnection")
+		} else { // Catch all
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal error see error log!"))
 			fmt.Printf("Error: %v in handleCreateUserConnection from InsertConnection for [Email: %v]", err, user.Email)
+		}
 	}
 }
