@@ -16,15 +16,15 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: homePage")
 }
 
-func (s *Server) handleGetUserByID(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: handleGetUserByID")
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
 	// Get id from URL path
-	id := vars["id"]
+	email := vars["email"]
 
-	user, err := s.store.Get(id)
+	user, err := s.store.Get(email)
 
 	if err != nil {
 
@@ -36,7 +36,7 @@ func (s *Server) handleGetUserByID(w http.ResponseWriter, r *http.Request) {
 		} else { // Catch all
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Internal error see error log!"))
-			fmt.Printf("Error: %v in handleGetUserByID for [ID: %v]", err, id)
+			fmt.Printf("Error: %v in handleGetUserByEmail for [Email: %v]", err, email)
 		}
 		// Exit here if error
 		return
