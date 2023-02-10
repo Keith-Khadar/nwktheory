@@ -24,7 +24,7 @@ func (s *Server) Start() error {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", homePage)
-	router.HandleFunc("/users/{id}", s.handleGetUserByID).Methods("GET")
+	router.HandleFunc("/users/{email}", s.handleGetUserByEmail).Methods("GET")
 	router.HandleFunc("/users", s.handleCreateUser).Methods("POST")
 	router.HandleFunc("/users/{email}/connections", s.handleCreateUserConnection).Methods("POST")
 	return http.ListenAndServe(s.listenAddr, router)
