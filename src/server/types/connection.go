@@ -1,9 +1,9 @@
 package types
 
 type Connection struct {
-	SourceUser string `json:"SourceUser"`
-	DestinationUser string `json:"DestinationUser"`
-	Weight float32 `json:"Weight"`
+	SourceUser string `json:"SourceUser" bson:"sourceuser"`
+	DestinationUser string `json:"DestinationUser" bson:"destinationuser"`
+	Weight float32 `json:"Weight" bson:"weight"`
 }
 
 func ValidateConnection(c *Connection) bool { 

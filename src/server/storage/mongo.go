@@ -76,13 +76,28 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 	filter := bson.M{"email": Email}
 
 	if types.ValidateConnection(&connection) {
+		// Check if connection already exists
+		user, err := s.Get(Email)
+
+		// Check for matching connection 
+		for _, queriedConnection := range(user.Connections) {
+
+			// Return an error if SourceUser and DestinationUser are the same 
+			if connection.SourceUser == queriedConnection.SourceUser && 
+				connection.DestinationUser == queriedConnection.DestinationUser {
+					return errors.New("connection already exists")
+				}
+		}
+
 		// Append a connection object to the connections array for user selected by the filter above
 		change := bson.M{"$push":bson.M{"connections":connection}}
 
-		_, err := coll.UpdateOne(context.TODO(), filter, change)
+		_, err = coll.UpdateOne(context.TODO(), filter, change)
 	
 		fmt.Printf("Inserted connection: [SourceUser: %v, DestinationUser: %v, Weight: %v]", connection.SourceUser, 
 			connection.DestinationUser, connection.Weight)
+		
+		// Returns nill if coll.UpdateOne returns an error from db
 		return err
 	} else {
 		return errors.New("invalid connection")
