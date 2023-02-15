@@ -30,13 +30,10 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 
 		// Return HTTP 404 if user does not exist in db
 		if strings.Contains(fmt.Sprint(err), "no documents") {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("User does not exist!"))
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
 
 		} else { // Catch all
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Internal error see error log!"))
-			fmt.Printf("Error: %v in handleGetUserByEmail for [Email: %v]", err, email)
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
 		// Exit here if error
 		return
@@ -61,14 +58,10 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 
         // Invalid user submission
         if strings.Contains(fmt.Sprint(err), "invalid user") {
-            w.WriteHeader(http.StatusUnprocessableEntity)
-            w.Write([]byte("Invalid user format!"))
-			fmt.Printf("Error: Invalid user format in handleCreateUser")
+            ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
 
         } else { // Catch all
-            w.WriteHeader(http.StatusInternalServerError)
-            w.Write([]byte("Internal error see error log!"))
-            fmt.Printf("Error: %v in handleCreateUser for [Name: %v, Email: %v] ", err, user.Name, user.Email)
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
 
         }
     }
@@ -93,20 +86,15 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		if strings.Contains(fmt.Sprint(err), "no documents") {
 			// Return HTTP 404 if user does not exist in db
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("User does not exist!"))
-			fmt.Printf("Error: Invalid user [Email: %v] in handleCreateUserConnection", reqUserEmail)
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
 
 		} else if strings.Compare(reqUserEmail, connection.SourceUser) != 0 { 
 			// Return HTTP 422 if requested user by email in /users/{email}/connections does not match soureUser in connection
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			w.Write([]byte("Requested user does not match SourceUser in connection!"))
-			fmt.Printf("Error: Requested user [Email: %v] does not match SourceUser [Email: %v] in handleCreateUserConnection", user.Email, connection.SourceUser)
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Requested user does not match SourceUser in connection!")
 
 		} else { // Catch all
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Internal error see error log!"))
-			fmt.Printf("Error: %v in handleCreateUserConnection for [Email: %v]", err, user.Email)
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+
 		}
 
 		return
@@ -118,9 +106,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		if  strings.Contains(fmt.Sprint(err), "invalid connection") {
 			// Return HTTP 422 if requested connection to add is invalid
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			w.Write([]byte("Invalid connection format!"))
-			fmt.Printf("Error: Invalid connection format in handleCreateUserConnection")
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid connection format!")
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
