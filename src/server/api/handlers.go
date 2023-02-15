@@ -122,9 +122,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 			w.Write([]byte("Invalid connection format!"))
 			fmt.Printf("Error: Invalid connection format in handleCreateUserConnection")
 		} else { // Catch all
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Internal error see error log!"))
-			fmt.Printf("Error: %v in handleCreateUserConnection from InsertConnection for [Email: %v]", err, user.Email)
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
 	}
 }
