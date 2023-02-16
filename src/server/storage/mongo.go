@@ -83,6 +83,10 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 	return err
 }
 
+func (s *MongoStorage) UpdateUser(Email string, Name string) error {
+	return nil
+}
+
 func (s *MongoStorage) InsertConnection(Email string, connection *types.Connection) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
