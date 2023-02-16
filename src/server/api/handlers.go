@@ -128,3 +128,16 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 		}
 	}
 }
+
+func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Request) {
+	// Retrieve mux variables from URL
+	vars := mux.Vars(r)
+
+	// Get Email from URL path
+	reqUserEmail := vars["email"]
+
+	queriedSourceUser := r.URL.Query().Get("sourceuser")
+	queriedDestinationUser := r.URL.Query().Get("destinationuser")
+
+	s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
+}

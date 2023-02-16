@@ -28,5 +28,6 @@ func (s *Server) Start() error {
 	router.HandleFunc("/users", s.handleCreateUser).Methods("POST")
 	router.HandleFunc("/users/{email}", s.handleDeleteUser).Methods("DELETE")
 	router.HandleFunc("/users/{email}/connections", s.handleCreateUserConnection).Methods("POST")
+	router.HandleFunc("/users/{email}/connections", s.handleDeleteUserConnection).Methods("DELETE")
 	return http.ListenAndServe(s.listenAddr, router)
 }

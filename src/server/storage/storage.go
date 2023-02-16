@@ -7,4 +7,5 @@ type Storage interface {
 	InsertUser(types.User) error
 	InsertConnection(string, types.Connection) error
 	DeleteUser(Email string) error
+	DeleteConnection(UserEmail string, SourceUser string, DestinationUser string) error
 }

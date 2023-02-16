@@ -125,6 +125,19 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 	}
 }
 
+func (s *MongoStorage) DeleteConnection(UserEmail string, SourceUser string, DestinationUser string) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	
+	// Create paramters for db query
+	filter := bson.M{"email": UserEmail}
+	changes := bson.M{"$pull": bson.M{"connections": bson.M{"sourceuser": SourceUser,"destinationuser": DestinationUser,}}}
+
+	// Delete connection
+	_, err := coll.UpdateOne(context.TODO(), filter, changes)
+
+	return err
+}
+
 // Taken from GeeksForGeeks
 // URL: https://www.geeksforgeeks.org/how-to-use-go-with-mongodb/
 // ======================================
