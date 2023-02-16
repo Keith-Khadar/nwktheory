@@ -103,6 +103,13 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 				}
 		}
 
+		// Check if destination user exists in the database
+		_, _desterr := s.Get(connection.DestinationUser)
+
+		if (_desterr != nil) {
+			return errors.New("destination user does not exist")
+		}
+
 		// Append a connection object to the connections array for user selected by the filter above
 		change := bson.M{"$push":bson.M{"connections":connection}}
 
