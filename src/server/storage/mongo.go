@@ -76,18 +76,11 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 	filter := bson.M{"email": Email}
 
 	if types.ValidateConnection(&connection) {
-		// Check if the account the user wants to connect to exits in the database
-		_, _err := s.Get(connection.DestinationUser)
-
-		if _err != nil {
-			return errors.New("destination user does not exist")
-		}
-
 		// Check if connection already exists
-		queriedSourceUser, err := s.Get(Email)
+		user, err := s.Get(Email)
 
 		// Check for matching connection 
-		for _, queriedConnection := range(queriedSourceUser.Connections) {
+		for _, queriedConnection := range(user.Connections) {
 
 			// Return an error if SourceUser and DestinationUser are the same 
 			if connection.SourceUser == queriedConnection.SourceUser && 
@@ -109,6 +102,20 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 	} else {
 		return errors.New("invalid connection")
 	}
+}
+
+func (s *MongoStorage) DeleteUser(Email string) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+
+	// Find correct user
+	filter := bson.M{"email": Email}
+
+	// Delete the inteded user
+	_, err := coll.DeleteOne(context.TODO(), filter)
+
+	// Will return error if it exists
+	fmt.Println(err)
+	return err
 }
 
 // Taken from GeeksForGeeks
