@@ -67,6 +67,22 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: handleDeleteUser")
+	// Retrieve mux variables from URL
+	vars := mux.Vars(r)
+
+	// Get id from URL path
+	email := vars["email"]
+
+	err := s.store.DeleteUser(email)
+
+	if err != nil {
+
+		ApiHttpError(w, err, http.StatusInternalServerError, "")
+	}
+}
+
 func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: handleCreateUserConnection")
 
@@ -110,21 +126,5 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
-	}
-}
-
-func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleDeleteUser")
-	// Retrieve mux variables from URL
-	vars := mux.Vars(r)
-
-	// Get id from URL path
-	email := vars["email"]
-
-	err := s.store.DeleteUser(email)
-
-	if err != nil {
-
-		ApiHttpError(w, err, http.StatusInternalServerError, "")
 	}
 }
