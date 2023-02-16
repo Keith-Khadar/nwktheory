@@ -69,6 +69,20 @@ func (s *MongoStorage) InsertUser(user types.User) error {
 	}
 }
 
+func (s *MongoStorage) DeleteUser(Email string) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+
+	// Find correct user
+	filter := bson.M{"email": Email}
+
+	// Delete the inteded user
+	_, err := coll.DeleteOne(context.TODO(), filter)
+
+	// Will return error if it exists
+	fmt.Println(err)
+	return err
+}
+
 func (s *MongoStorage) InsertConnection(Email string, connection types.Connection) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
@@ -102,20 +116,6 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 	} else {
 		return errors.New("invalid connection")
 	}
-}
-
-func (s *MongoStorage) DeleteUser(Email string) error {
-	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
-
-	// Find correct user
-	filter := bson.M{"email": Email}
-
-	// Delete the inteded user
-	_, err := coll.DeleteOne(context.TODO(), filter)
-
-	// Will return error if it exists
-	fmt.Println(err)
-	return err
 }
 
 // Taken from GeeksForGeeks
