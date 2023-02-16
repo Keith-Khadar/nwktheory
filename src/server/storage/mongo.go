@@ -43,7 +43,7 @@ func NewMongoStorage(DatabaseName string, CollectionName string) *MongoStorage {
 	}
 }
 
-func (s *MongoStorage) Get(Email string) (*types.User, error) {
+func (s *MongoStorage) GetUser(Email string) (*types.User, error) {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
 	// Create var to capture data from db
@@ -57,10 +57,10 @@ func (s *MongoStorage) Get(Email string) (*types.User, error) {
 	return &user, err
 }
 
-func (s *MongoStorage) InsertUser(user types.User) error {
+func (s *MongoStorage) InsertUser(user *types.User) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
-	if types.ValidateUser(&user) {
+	if types.ValidateUser(user) {
 		result, _ := coll.InsertOne(context.TODO(), user)
 		fmt.Printf("Inserted user: [Name: %v, Email: %v] with _id: %v\n", user.Name, user.Email, result.InsertedID)
 		return nil
@@ -83,15 +83,15 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 	return err
 }
 
-func (s *MongoStorage) InsertConnection(Email string, connection types.Connection) error {
+func (s *MongoStorage) InsertConnection(Email string, connection *types.Connection) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
 	// Select document with Email from function parameter
 	filter := bson.M{"email": Email}
 
-	if types.ValidateConnection(&connection) {
+	if types.ValidateConnection(connection) {
 		// Check if connection already exists
-		user, err := s.Get(Email)
+		user, err := s.GetUser(Email)
 
 		// Check for matching connection 
 		for _, queriedConnection := range(user.Connections) {
@@ -104,7 +104,7 @@ func (s *MongoStorage) InsertConnection(Email string, connection types.Connectio
 		}
 
 		// Check if destination user exists in the database
-		_, _desterr := s.Get(connection.DestinationUser)
+		_, _desterr := s.GetUser(connection.DestinationUser)
 
 		if (_desterr != nil) {
 			return errors.New("destination user does not exist")

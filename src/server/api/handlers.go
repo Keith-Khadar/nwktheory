@@ -24,7 +24,7 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	// Get id from URL path
 	email := vars["email"]
 
-	user, err := s.store.Get(email)
+	user, err := s.store.GetUser(email)
 
 	if err != nil {
 
@@ -52,7 +52,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
     var user types.User
     json.Unmarshal(reqBody, &user)
 
-    err := s.store.InsertUser(user)
+    err := s.store.InsertUser(&user)
 
     if err != nil {
 
@@ -96,7 +96,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 	var connection types.Connection
 	json.NewDecoder(r.Body).Decode(&connection)
 
-	user, err := s.store.Get(reqUserEmail)
+	user, err := s.store.GetUser(reqUserEmail)
 
 	// Handle preliminary errors
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = s.store.InsertConnection(user.Email, connection)
+	err = s.store.InsertConnection(user.Email, &connection)
 
 	// Return error if mongo returns error when inserting a connection
 	if err != nil {
