@@ -1,9 +1,14 @@
 package types
 
 type User struct {
-	UserID string `json:"UserId"`
-	Name   string `json:"Name"`
-	Email  string `json:"Email"`
+	Name   string `json:"Name" bson:"name"`
+	Email  string `json:"Email" bson:"email"`
+	Connections []Connection `json:"Connections" bson:"connections"`
 }
 
-func ValidateUser(u *User) bool { return true }
+func ValidateUser(u *User) bool { 
+	if  u.Name != "" && u.Email != "" {
+		return true
+	}
+	return false
+}

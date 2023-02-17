@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"server/types"
 	"time"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -42,32 +43,119 @@ func NewMongoStorage(DatabaseName string, CollectionName string) *MongoStorage {
 	}
 }
 
-func (s *MongoStorage) Get(UserID string) (*types.User, error) {
+func (s *MongoStorage) GetUser(Email string) (*types.User, error) {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
 	// Create var to capture data from db
 	var user types.User
 
 	// Filter to find user based on UserID
-	filter := bson.D{{Key: "userid", Value: UserID}}
+	filter := bson.D{{Key: "email", Value: Email}}
 
 	err := coll.FindOne(context.TODO(), filter).Decode(&user)
 
 	return &user, err
 }
 
-func (s *MongoStorage) InsertUser(user types.User) error {
+func (s *MongoStorage) InsertUser(user *types.User) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
-	result, err := coll.InsertOne(context.TODO(), user)
+	if types.ValidateUser(user) {
+		result, _ := coll.InsertOne(context.TODO(), user)
+		fmt.Printf("Inserted user: [Name: %v, Email: %v] with _id: %v\n", user.Name, user.Email, result.InsertedID)
+		return nil
+	} else {
+		return errors.New("invalid user")
+	}
+}
+
+func (s *MongoStorage) DeleteUser(Email string) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+
+	// Find correct user
+	filter := bson.M{"email": Email}
+
+	// Delete the intended user
+	_, err := coll.DeleteOne(context.TODO(), filter)
+
+	// Will return error if it exists
+	fmt.Println(err)
+	return err
+}
+
+func (s *MongoStorage) UpdateUser(Email string, Name string) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+
+	// Select document with Email from function parameter
+	filter := bson.M{"email": Email}
+
+	// Check if user already exists
+	_, err := s.GetUser(Email)
 
 	if err != nil {
-		return err
-	} else {
-		fmt.Printf("Inserted user: [Name: %v, UserID: %v] with _id: %v\n", user.Name, user.UserID, result.InsertedID)
+		return errors.New("invalid user")
 	}
 
-	return nil
+	change := bson.M{"$set":bson.M{"name": Name}}
+
+	_, err = coll.UpdateOne(context.TODO(), filter, change)
+
+	return err
+}
+
+func (s *MongoStorage) InsertConnection(Email string, connection *types.Connection) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+
+	// Select document with Email from function parameter
+	filter := bson.M{"email": Email}
+
+	if types.ValidateConnection(connection) {
+		// Check if connection already exists
+		user, err := s.GetUser(Email)
+
+		// Check for matching connection 
+		for _, queriedConnection := range(user.Connections) {
+
+			// Return an error if SourceUser and DestinationUser are the same 
+			if connection.SourceUser == queriedConnection.SourceUser && 
+				connection.DestinationUser == queriedConnection.DestinationUser {
+					return errors.New("connection already exists")
+				}
+		}
+
+		// Check if destination user exists in the database
+		_, _desterr := s.GetUser(connection.DestinationUser)
+
+		if (_desterr != nil) {
+			return errors.New("destination user does not exist")
+		}
+
+		// Append a connection object to the connections array for user selected by the filter above
+		change := bson.M{"$push":bson.M{"connections": connection}}
+
+		_, err = coll.UpdateOne(context.TODO(), filter, change)
+	
+		fmt.Printf("Inserted connection: [SourceUser: %v, DestinationUser: %v, Weight: %v]", connection.SourceUser, 
+			connection.DestinationUser, connection.Weight)
+		
+		// Returns nill if coll.UpdateOne returns an error from db
+		return err
+	} else {
+		return errors.New("invalid connection")
+	}
+}
+
+func (s *MongoStorage) DeleteConnection(UserEmail string, SourceUser string, DestinationUser string) error {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	
+	// Create paramters for db query
+	filter := bson.M{"email": UserEmail}
+	changes := bson.M{"$pull": bson.M{"connections": bson.M{"sourceuser": SourceUser,"destinationuser": DestinationUser,}}}
+
+	// Delete connection
+	_, err := coll.UpdateOne(context.TODO(), filter, changes)
+
+	return err
 }
 
 // Taken from GeeksForGeeks
