@@ -177,6 +177,8 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: handleDeleteUserConnection")
+
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 

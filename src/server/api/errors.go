@@ -25,5 +25,5 @@ func ApiHttpError (w http.ResponseWriter, err error, httpStatusCode uint, httpRe
 
 	w.WriteHeader(int(httpStatusCode))
 	w.Write([]byte(httpResponseBody))
-	fmt.Printf("Error: %v || HTTP Response Body: %v", err, httpResponseBody)
+	fmt.Printf("Error: %v || HTTP Response Body: %v\n", err, httpResponseBody)
 }
