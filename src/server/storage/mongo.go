@@ -79,7 +79,6 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 	_, err := coll.DeleteOne(context.TODO(), filter)
 
 	// Will return error if it exists
-	fmt.Println(err)
 	return err
 }
 
@@ -89,16 +88,9 @@ func (s *MongoStorage) UpdateUser(Email string, Name string) error {
 	// Select document with Email from function parameter
 	filter := bson.M{"email": Email}
 
-	// Check if user already exists
-	_, err := s.GetUser(Email)
-
-	if err != nil {
-		return errors.New("invalid user")
-	}
-
 	change := bson.M{"$set":bson.M{"name": Name}}
 
-	_, err = coll.UpdateOne(context.TODO(), filter, change)
+	_, err := coll.UpdateOne(context.TODO(), filter, change)
 
 	return err
 }
