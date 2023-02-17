@@ -75,7 +75,7 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 	// Find correct user
 	filter := bson.M{"email": Email}
 
-	// Delete the inteded user
+	// Delete the intended user
 	_, err := coll.DeleteOne(context.TODO(), filter)
 
 	// Will return error if it exists
