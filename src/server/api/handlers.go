@@ -83,6 +83,10 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
+	
+}
+
 func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: handleCreateUserConnection")
 
