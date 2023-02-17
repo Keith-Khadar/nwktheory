@@ -84,7 +84,23 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 }
 
 func (s *MongoStorage) UpdateUser(Email string, Name string) error {
-	return nil
+	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+
+	// Select document with Email from function parameter
+	filter := bson.M{"email": Email}
+
+	// Check if user already exists
+	_, err := s.GetUser(Email)
+
+	if err != nil {
+		return errors.New("invalid user")
+	}
+
+	change := bson.M{"$set":bson.M{"name": Name}}
+
+	_, err = coll.UpdateOne(context.TODO(), filter, change)
+
+	return err
 }
 
 func (s *MongoStorage) InsertConnection(Email string, connection *types.Connection) error {
@@ -115,7 +131,7 @@ func (s *MongoStorage) InsertConnection(Email string, connection *types.Connecti
 		}
 
 		// Append a connection object to the connections array for user selected by the filter above
-		change := bson.M{"$push":bson.M{"connections":connection}}
+		change := bson.M{"$push":bson.M{"connections": connection}}
 
 		_, err = coll.UpdateOne(context.TODO(), filter, change)
 	

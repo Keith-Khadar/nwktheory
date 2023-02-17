@@ -84,7 +84,21 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Endpoint Hit: handleUpdateUser")
+
+	// Retrieve mux variables from URL
+	vars := mux.Vars(r)
+
+	// Get id from URL path
+	email := vars["email"]
+	queriedUpdateName := r.URL.Query().Get("name")
+
+	err := s.store.UpdateUser(email, queriedUpdateName)
 	
+	if err != nil {
+		ApiHttpError(w, err, http.StatusInternalServerError, "")
+
+	}
 }
 
 func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
