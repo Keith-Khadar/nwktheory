@@ -40,6 +40,7 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 
 #### GET /users/{email}
 - **What it does:** Return one user and their data identified by email
+- **Note:** Requested user should exist in the database
 
 
 ## Create Information:
@@ -62,7 +63,25 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 ## Delete Information:
 
 #### DELETE /users/{email}
-- **What id does:** Delete a user, identified by their email, and all their related information
+- **What it does:** Delete a user, identified by their email, and all their related information
 - **Requirements:**
   - {email} in the URL path should exist in the database
-- **Note:** The api will not return an error if the user specified does not exist and will not delete any documents.
+- **Note:** The api will return an error if the user specified does not exist and will not delete any documents.
+
+#### DELETE /users/{email}/connections
+- **What it does:** Delete a user connection, identified by their email, and all their related information
+- **Requirements:**
+  - {email} in the URL path should exist in the database
+  - SourceUser in the URL path as a query parameter (must be the same as {email})
+  - DestinationUser in the URL path as a query parameter (should exist in the database)
+- **Note:** The api will return an error if the user specified does not exist and will not delete any documents.
+
+
+## Modify Information:
+
+#### PUT /users/{email}
+- - **What it does:** Update a user's information, identified by their email, and all their related information
+- **Requirements:**
+  - {email} in the URL path should exist in the database
+  - Name in the URL path as a query parameter (additional user sections will be added to allow more modification to a user's profile)
+- **Note:** The api will return an error if the user specified does not exist and will not change any documents.
