@@ -144,22 +144,12 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
-	}
-
-	//Adding mirror conneciton for desitnation user
-	var newConnection = connection
-	newConnection.SourceUser = connection.DestinationUser
-	newConnection.DestinationUser = connection.SourceUser
-	err = s.store.InsertConnection(connection.DestinationUser, &newConnection)
-
-	// Return error if mongo returns error when inserting a connection
-	if err != nil {
-		if strings.Contains(fmt.Sprint(err), "invalid connection") {
-			// Return HTTP 422 if requested connection to add is invalid
-			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid connection format!")
-		} else { // Catch all
-			ApiHttpError(w, err, http.StatusInternalServerError, "")
-		}
+	} else {
+		//Adding mirror conneciton for desitnation user
+		var newConnection = connection
+		newConnection.SourceUser = connection.DestinationUser
+		newConnection.DestinationUser = connection.SourceUser
+		err = s.store.InsertConnection(connection.DestinationUser, &newConnection)
 	}
 }
 

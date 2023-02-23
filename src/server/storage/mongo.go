@@ -161,21 +161,21 @@ func (s *MongoStorage) DeleteConnection(UserEmail string, SourceUser string, Des
 
 	// Check for matching connection
 	for _, queriedConnection := range user.Connections {
-		// Return an error if SourceUser and DestinationUser are not the same
-		if SourceUser != queriedConnection.SourceUser ||
-			DestinationUser != queriedConnection.DestinationUser {
-			return errors.New("connection does not exist")
+		if DestinationUser != queriedConnection.DestinationUser {
+			continue
+		} else {
+			// Create paramters for db query
+			filter := bson.M{"email": UserEmail}
+			changes := bson.M{"$pull": bson.M{"connections": bson.M{"sourceuser": SourceUser, "destinationuser": DestinationUser}}}
+
+			// Delete connection
+			_, err = coll.UpdateOne(context.TODO(), filter, changes)
+
+			return err
 		}
 	}
 
-	// Create paramters for db query
-	filter := bson.M{"email": UserEmail}
-	changes := bson.M{"$pull": bson.M{"connections": bson.M{"sourceuser": SourceUser, "destinationuser": DestinationUser}}}
-
-	// Delete connection
-	_, err = coll.UpdateOne(context.TODO(), filter, changes)
-
-	return err
+	return errors.New("connection does not exist")
 }
 
 // Taken from GeeksForGeeks
