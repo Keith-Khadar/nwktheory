@@ -135,6 +135,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = s.store.InsertConnection(user.Email, &connection)
+	// Add destination user
 
 	// Return error if mongo returns error when inserting a connection
 	if err != nil {
@@ -160,3 +161,4 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 
 	s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
 }
+
