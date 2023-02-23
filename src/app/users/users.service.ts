@@ -20,8 +20,9 @@ export interface User{
 }
 
 export interface UserData{
-  name: string;
-  email: string;
+  Name: string;
+  Email: string;
+  Connections: [];
 }
 
 @Injectable()

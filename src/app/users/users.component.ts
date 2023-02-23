@@ -7,8 +7,9 @@ export interface User{
 }
 
 export interface UserData{
-  name: string;
-  email: string;
+  Name: string;
+  Email: string;
+  Connections: [];
 }
 
 @Component({
@@ -73,7 +74,9 @@ export class UsersComponent implements OnInit {
     if(searchTerm){
       this.UsersService
         .searchUsers(searchTerm)
-        .subscribe(userdata => (this.userData = userdata));
+        .subscribe(userdata => {
+          this.userData = userdata
+        console.log(userdata.Name)});
     } else{
       // this.getUsers();
     }

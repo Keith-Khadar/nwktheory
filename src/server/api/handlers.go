@@ -17,7 +17,7 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Endpoint Hit: handleGetUserByID from %v\n", r.RemoteAddr)
+	fmt.Printf("Endpoint Hit: handleGetUserByEmail from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
@@ -40,6 +40,7 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// No error encode user data
+	fmt.Println(user)
 	json.NewEncoder(w).Encode(user)
 }
 
