@@ -21,7 +21,7 @@ export interface User{
 
 @Injectable()
 export class UsersService {
-  usersUrl = 'api/user'; // URL to web api
+  usersUrl = 'http://10.136.149.139:7000/users'; // URL to web api
   private handleError: HandleError;
 
   constructor(

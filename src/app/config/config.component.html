@@ -11,7 +11,7 @@
   <span *ngIf="config">
     <p>Users API URL is "{{config.usersUrl}}"</p>
     <p>Textfile URL is "{{config.textfile}}"</p>
-    <p>Date is "{{config.date.toDateString()}}" ({{getType(config.date)}})</p>
+    <p>Date is "{{config.date}}"</p>
     <div *ngIf="headers">
       Response headers:
       <ul>

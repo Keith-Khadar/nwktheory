@@ -1,5 +1,5 @@
 {
-    "usersUrl" : "api/user",
+    "usersUrl" : "http://10.136.149.139:7000/users",
     "textfile" : "assets/textfile.txt",
-    "data" : "2020-01-29"
+    "date" : "2020-01-29"
 }
