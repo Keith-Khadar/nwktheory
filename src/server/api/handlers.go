@@ -156,7 +156,12 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 	// Get Email from URL path
 	reqUserEmail := vars["email"]
 
+	// If SourceUser not specificied in a query parameter get it from url path variable
 	queriedSourceUser := r.URL.Query().Get("sourceuser")
+	if queriedSourceUser == "" {
+		queriedSourceUser = reqUserEmail
+	}
+
 	queriedDestinationUser := r.URL.Query().Get("destinationuser")
 
 	s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
