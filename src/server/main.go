@@ -12,7 +12,7 @@ func main() {
 	listenAddr := flag.String("listenaddr", ":3000", "the server address")
 	flag.Parse()
 
-	store := storage.NewMongoStorage("test", "users")
+	store := storage.NewMemoryStorage()
 
 	server := api.NewServer(*listenAddr, store)
 	fmt.Println("server running on port:", *listenAddr)

@@ -20,10 +20,10 @@ func ApiHttpError (w http.ResponseWriter, err error, httpStatusCode uint, httpRe
 
 	// No httpResponseBody provided
 	if httpResponseBody == "" {
-		httpResponseBody = "Internal server error see error log!"
+		httpResponseBody = "Internal server error see error log!\n"
 	}
 
 	w.WriteHeader(int(httpStatusCode))
 	w.Write([]byte(httpResponseBody))
-	fmt.Printf("Error: %v || HTTP Response Body: %v", err, httpResponseBody)
+	fmt.Printf("Error: %v || HTTP Response Body: %v\n", err, httpResponseBody)
 }
