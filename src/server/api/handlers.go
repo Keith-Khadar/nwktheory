@@ -12,12 +12,12 @@ import (
 )
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the HomePage!")
+	fmt.Fprintf(w, "Welcome to the HomePage! from %v\n", r.RemoteAddr)
 	fmt.Println("Endpoint Hit: homePage")
 }
 
 func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleGetUserByID")
+	fmt.Printf("Endpoint Hit: handleGetUserByID from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
@@ -44,7 +44,7 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
-    fmt.Println("Endpoint Hit: handleCreateUser")
+    fmt.Printf("Endpoint Hit: handleCreateUser from %v\n", r.RemoteAddr)
     // Get the body of our POST request
     reqBody, _ := ioutil.ReadAll(r.Body)
 
@@ -68,7 +68,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleDeleteUser")
+	fmt.Printf("Endpoint Hit: handleDeleteUser from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
@@ -84,7 +84,7 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleUpdateUser")
+	fmt.Printf("Endpoint Hit: handleUpdateUser from %v", r.RemoteAddr)
 
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
@@ -102,7 +102,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleCreateUserConnection")
+	fmt.Printf("Endpoint Hit: handleCreateUserConnection from %v\n", r.RemoteAddr)
 
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
@@ -148,6 +148,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Endpoint Hit: handleDeleteUserConnection from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
