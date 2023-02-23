@@ -6,6 +6,11 @@ export interface User{
   name: string;
 }
 
+export interface UserData{
+  name: string;
+  email: string;
+}
+
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
@@ -14,6 +19,7 @@ export interface User{
 })
 export class UsersComponent implements OnInit {
   users: User[] = [];
+  userData: UserData | undefined;
   editUser: User | undefined; // the user currently being edited
   userName = '';
 
@@ -28,13 +34,13 @@ export class UsersComponent implements OnInit {
     }
   
   ngOnInit(): void {
-    this.getUsers();
+    // this.getUsers();
   }
 
-  getUsers(): void {
-    this.UsersService.getUsers()
-      .subscribe(users => (this.users = users));
-  }
+  // getUsers(): void {
+  //   this.UsersService.getUsers()
+  //     .subscribe(users => (this.users = users));
+  // }
 
   add(name: string): void {
     this.editUser = undefined;
@@ -67,9 +73,9 @@ export class UsersComponent implements OnInit {
     if(searchTerm){
       this.UsersService
         .searchUsers(searchTerm)
-        .subscribe(users => (this.users = users));
+        .subscribe(userdata => (this.userData = userdata));
     } else{
-      this.getUsers();
+      // this.getUsers();
     }
   }
 

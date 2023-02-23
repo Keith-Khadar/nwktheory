@@ -19,9 +19,14 @@ export interface User{
   name: string;
 }
 
+export interface UserData{
+  name: string;
+  email: string;
+}
+
 @Injectable()
 export class UsersService {
-  usersUrl = 'http://10.136.149.139:7000/users'; // URL to web api
+  usersUrl = 'http://localhost:7000/users'; // URL to web api
   private handleError: HandleError;
 
   constructor(
@@ -30,26 +35,23 @@ export class UsersService {
       this.handleError = httpErrorHandler.createHandleError('UserService');
   }
 
-  // Get users from the server
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.usersUrl)
-      .pipe(
-        catchError(this.handleError('getUser', []))
-      );
-  }
+  // // Get users from the server
+  // getUsers(): Observable<User[]> {
+  //   return this.http.get<User[]>(this.usersUrl)
+  //     .pipe(
+  //       catchError(this.handleError('getUser', []))
+  //     );
+  // }
 
   // Get users whose name contains search term
-  searchUsers(term: string): Observable<User[]>{
+  searchUsers(term: string): Observable<UserData>{
     term = term.trim();
 
     // Add safe, URL encoded search perameter if there is a search term
-    const options = term ? 
-    { params: new HttpParams().set('name', term) } :
-      {};
-      return this.http.get<User[]>(this.usersUrl, options)
+      return this.http.get<UserData>(this.usersUrl + "/"+ term)
         .pipe(
-          catchError(this.handleError<User[]>
-            ('searchUsers', []))
+          catchError(this.handleError<UserData>
+            ('searchUsers'))
         );
     }
   

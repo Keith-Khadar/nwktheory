@@ -1,5 +1,5 @@
 {
-    "usersUrl" : "http://10.136.149.139:7000/users",
+    "usersUrl" : "http://localhost:7000/users/",
     "textfile" : "assets/textfile.txt",
     "date" : "2020-01-29"
 }
