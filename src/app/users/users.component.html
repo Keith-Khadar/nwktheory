@@ -1,0 +1,29 @@
+<h2>Users</h2>
+<div class="search">
+  <label for="user-name">User name: </label>
+  <input type="text" [(ngModel)]="userName" id="user-name">
+
+  <button type="button" [disabled]="!userName"
+    (click)="add(userName)">Add User</button>
+  <button type="button" (click)="search(userName)">
+    Search
+  </button>
+</div>
+
+<ul class="Users">
+  <li *ngFor="let user of users">
+    <span class="badge">{{ user.id || -1 }}</span>
+    <span *ngIf="user!==editUser; else editInput" class="name">{{user.name}}</span>
+    <ng-template #editInput>
+      <input #userEditInput type="text" class="name" [value]="editUser!.name" (blur)="edit(userEditInput.value)" (keydown.enter)="edit(userEditInput.value)"/>
+    </ng-template>
+    <button *ngIf="user!==editUser" type="button" class="edit" title="edit user"
+      (click)="editUser = user">
+      Edit
+    </button>
+    <button type="button" class="delete" title="delete user"
+      (click)="delete(user)">
+      Delete
+    </button>
+  </li>
+</ul>
