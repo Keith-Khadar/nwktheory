@@ -26,12 +26,14 @@ export class GraphComponent implements AfterViewInit {
       credits: {
         enabled: false
       },
+      draggable: {
+        draggable: false,
+      },
       plotOptions: {
         networkgraph: {
           keys: ['from', 'to'],
           layoutAlgorithm: {
-            enableSimulation: true,
-            friction: -0.9
+            enableSimulation: false,
           }
         }
       },
