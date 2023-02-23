@@ -44,27 +44,27 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
-    fmt.Printf("Endpoint Hit: handleCreateUser from %v\n", r.RemoteAddr)
-    // Get the body of our POST request
-    reqBody, _ := ioutil.ReadAll(r.Body)
+	fmt.Printf("Endpoint Hit: handleCreateUser from %v\n", r.RemoteAddr)
+	// Get the body of our POST request
+	reqBody, _ := ioutil.ReadAll(r.Body)
 
-    // Unmarshal body of POST request into new User struct
-    var user types.User
-    json.Unmarshal(reqBody, &user)
+	// Unmarshal body of POST request into new User struct
+	var user types.User
+	json.Unmarshal(reqBody, &user)
 
-    err := s.store.InsertUser(&user)
+	err := s.store.InsertUser(&user)
 
-    if err != nil {
+	if err != nil {
 
-        // Invalid user submission
-        if strings.Contains(fmt.Sprint(err), "invalid user") {
-            ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
+		// Invalid user submission
+		if strings.Contains(fmt.Sprint(err), "invalid user") {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
 
-        } else { // Catch all
+		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 
-        }
-    }
+		}
+	}
 }
 
 func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -94,7 +94,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	queriedUpdateName := r.URL.Query().Get("name")
 
 	err := s.store.UpdateUser(email, queriedUpdateName)
-	
+
 	if err != nil {
 		ApiHttpError(w, err, http.StatusInternalServerError, "")
 
@@ -122,7 +122,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 			// Return HTTP 404 if user does not exist in db
 			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
 
-		} else if strings.Compare(reqUserEmail, connection.SourceUser) != 0 { 
+		} else if strings.Compare(reqUserEmail, connection.SourceUser) != 0 {
 			// Return HTTP 422 if requested user by email in /users/{email}/connections does not match soureUser in connection
 			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Requested user does not match SourceUser in connection!")
 
@@ -135,11 +135,26 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = s.store.InsertConnection(user.Email, &connection)
-	// Add destination user
 
 	// Return error if mongo returns error when inserting a connection
 	if err != nil {
-		if  strings.Contains(fmt.Sprint(err), "invalid connection") {
+		if strings.Contains(fmt.Sprint(err), "invalid connection") {
+			// Return HTTP 422 if requested connection to add is invalid
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid connection format!")
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+	}
+
+	//Adding mirror conneciton for desitnation user
+	var newConnection = connection
+	newConnection.SourceUser = connection.DestinationUser
+	newConnection.DestinationUser = connection.SourceUser
+	err = s.store.InsertConnection(connection.DestinationUser, &newConnection)
+
+	// Return error if mongo returns error when inserting a connection
+	if err != nil {
+		if strings.Contains(fmt.Sprint(err), "invalid connection") {
 			// Return HTTP 422 if requested connection to add is invalid
 			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid connection format!")
 		} else { // Catch all
@@ -164,6 +179,10 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 
 	queriedDestinationUser := r.URL.Query().Get("destinationuser")
 
-	s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
-}
+	err := s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
 
+	if err != nil {
+		ApiHttpError(w, err, http.StatusInternalServerError, "")
+	}
+	// s.store.DeleteConnection(queriedDestinationUser, queriedDestinationUser, queriedSourceUser)
+}
