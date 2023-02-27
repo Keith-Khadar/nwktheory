@@ -81,14 +81,13 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		// Return HTTP 404 if user does not exist in db
 		if strings.Contains(fmt.Sprint(err), "no documents") {
 			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
-		
+
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
 		// Exit here if error
 		return
 	}
-	
 
 	err = s.store.DeleteUser(email)
 
@@ -108,9 +107,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	email := vars["email"]
 	queriedUpdateName := r.URL.Query().Get("name")
 
-
 	err := s.store.UpdateUser(email, queriedUpdateName)
-
 
 	if err != nil {
 		ApiHttpError(w, err, http.StatusInternalServerError, "")
@@ -186,14 +183,14 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 		// Return HTTP 404 if user does not exist in db
 		if strings.Contains(fmt.Sprint(err), "no documents") {
 			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
-		
+
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
 		// Exit here if error
 		return
 	}
-  
+
 	// If SourceUser not specificied in a query parameter get it from url path variable
 	queriedSourceUser := r.URL.Query().Get("sourceuser")
 	if queriedSourceUser == "" {
@@ -202,7 +199,7 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 
 	queriedDestinationUser := r.URL.Query().Get("destinationuser")
 
-	err := s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
+	err = s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
 
 	if err != nil {
 		ApiHttpError(w, err, http.StatusInternalServerError, "")

@@ -92,7 +92,7 @@ func (s *MongoStorage) UpdateUser(Email string, Name string) error {
 
 	// Select document with Email from function parameter
 	filter := bson.M{"email": Email}
-  
+
 	// Check if user already exists
 	_, err := s.GetUser(Email)
 
@@ -102,7 +102,7 @@ func (s *MongoStorage) UpdateUser(Email string, Name string) error {
 
 	change := bson.M{"$set": bson.M{"name": Name}}
 
-	_, err := coll.UpdateOne(context.TODO(), filter, change)
+	_, err = coll.UpdateOne(context.TODO(), filter, change)
 
 	return err
 }
