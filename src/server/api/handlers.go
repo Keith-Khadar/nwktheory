@@ -40,7 +40,6 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// No error encode user data
-	fmt.Println(user)
 	json.NewEncoder(w).Encode(user)
 }
 
