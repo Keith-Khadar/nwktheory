@@ -1,3 +1,4 @@
+import { UsersModule } from './../users/users.module';
 import { ChatPageComponent } from './chat-page.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -5,6 +6,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ChatPageRoutingModule } from './chat-page-routing.module';
+// Https Services
+import { ConfigModule } from '../config/config.module';
 
 
 @NgModule({
@@ -13,7 +16,9 @@ import { ChatPageRoutingModule } from './chat-page-routing.module';
     IonicModule,
     CommonModule,
     FormsModule,
-    ChatPageRoutingModule
+    ChatPageRoutingModule,
+    ConfigModule,
+    UsersModule
   ]
 })
 export class ChatPageModule { }
