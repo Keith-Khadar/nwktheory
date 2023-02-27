@@ -173,6 +173,7 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 
 	if err != nil {
 		ApiHttpError(w, err, http.StatusInternalServerError, "")
+	} else {
+		s.store.DeleteConnection(queriedDestinationUser, queriedDestinationUser, queriedSourceUser)
 	}
-	// s.store.DeleteConnection(queriedDestinationUser, queriedDestinationUser, queriedSourceUser)
 }
