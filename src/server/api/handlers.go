@@ -75,7 +75,22 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	// Get id from URL path
 	email := vars["email"]
 
-	err := s.store.DeleteUser(email)
+	_, err := s.store.GetUser(email)
+
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+		
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
+	}
+	
+
+	err = s.store.DeleteUser(email)
 
 	if err != nil {
 
@@ -93,7 +108,9 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	email := vars["email"]
 	queriedUpdateName := r.URL.Query().Get("name")
 
+
 	err := s.store.UpdateUser(email, queriedUpdateName)
+
 
 	if err != nil {
 		ApiHttpError(w, err, http.StatusInternalServerError, "")
@@ -154,6 +171,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Request) {
+
 	fmt.Printf("Endpoint Hit: handleDeleteUserConnection from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
@@ -161,6 +179,21 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 	// Get Email from URL path
 	reqUserEmail := vars["email"]
 
+	// Check if user exists in db
+	_, err := s.store.GetUser(reqUserEmail)
+
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+		
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
+	}
+  
 	// If SourceUser not specificied in a query parameter get it from url path variable
 	queriedSourceUser := r.URL.Query().Get("sourceuser")
 	if queriedSourceUser == "" {
