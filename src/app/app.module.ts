@@ -1,3 +1,4 @@
+import { MessageService } from './message.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -7,18 +8,30 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Auth0 Import the module from the SDK
 import { AuthModule } from '@auth0/auth0-angular';
+
+// Import Ionic
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { RouteReuseStrategy } from '@angular/router';
+
+// This is our login component that will redirect you to Auth0's universal login
 import { LoginComponent } from './login/login.component';
+
+// This is more sending https requests
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { HttpErrorHandler } from './http-error-handler.service';
+
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
+    HttpClientModule, // might need to have this follow browser idk
     AppRoutingModule,
     BrowserAnimationsModule,
     
@@ -32,9 +45,11 @@ import { LoginComponent } from './login/login.component';
     }),
     
     IonicModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule
   ],
-  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy}],
+  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+  HttpErrorHandler, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

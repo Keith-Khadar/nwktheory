@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func ApiHttpError (w http.ResponseWriter, err error, httpStatusCode uint, httpResponseBody string) {
+func ApiHttpError(w http.ResponseWriter, err error, httpStatusCode uint, httpResponseBody string) {
 
 	if err == nil {
 		w.WriteHeader(http.StatusOK)
@@ -27,3 +27,4 @@ func ApiHttpError (w http.ResponseWriter, err error, httpStatusCode uint, httpRe
 	w.Write([]byte(httpResponseBody))
 	fmt.Printf("Error: %v || HTTP Response Body: %v\n", err, httpResponseBody)
 }
+
