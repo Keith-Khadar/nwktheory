@@ -30,16 +30,23 @@ export class UsersComponent implements OnInit {
       this.userEmail = user!.email!
       this.userName = user!.name!
 
-      this.search(this.userEmail);
-
       console.log(this.userEmail);
-      if(this.User === undefined){
-        console.log("Could not find user. Creating one");
-        // Create a new user
-        this.add(this.userName);
+
+      try{
+        this.search(this.userEmail);
+      }
+      catch{
+          if(this.User === undefined){
+          console.log("Could not find user. Creating one");
+          // Create a new user
+          this.add(this.userName);
+        }
+      }
+      if(this.User !== undefined){
+        console.log("Found user");
       }
       else{
-        console.log("Found user");
+        console.log("Could not find server")
       }
     })
   }
