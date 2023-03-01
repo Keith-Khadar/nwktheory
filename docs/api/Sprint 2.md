@@ -1,3 +1,12 @@
+# Progress Update
+
+
+# Frontend Unit Tests
+
+
+# Backend Unit Tests
+
+
 # User Controls
 
 ## User Struct:
@@ -68,6 +77,7 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - 404 Not Found: Returned when the requested user to add a connection does not exist.
   - 422 Unprocessable Entity: Returned when the body of the POST request does not meet the minimum data requirements for creating a connection (See requirements section above). Or the JSON in POST request body has an error.
   - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
+
 
 ## Delete Information:
 
