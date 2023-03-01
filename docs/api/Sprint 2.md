@@ -1,5 +1,13 @@
 # Progress Update
 
+## What we have done:
+  - ### Frontend:
+    - 
+  
+  - ### Backend: 
+    - Added functionality for users to add and delete their connections
+    - Added error checking to handle invalid connections requesting to be added
+    - Added CORS policy to allow remote origin requests between clients and the server
 
 # Frontend Unit Tests
 
