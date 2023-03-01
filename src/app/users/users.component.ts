@@ -31,23 +31,7 @@ export class UsersComponent implements OnInit {
       this.userName = user!.name!
 
       console.log(this.userEmail);
-
-      try{
-        this.search(this.userEmail);
-      }
-      catch{
-          if(this.User === undefined){
-          console.log("Could not find user. Creating one");
-          // Create a new user
-          this.add(this.userName);
-        }
-      }
-      if(this.User !== undefined){
-        console.log("Found user");
-      }
-      else{
-        console.log("Could not find server")
-      }
+      this.search(this.userEmail, true);
     })
   }
 
@@ -78,12 +62,18 @@ export class UsersComponent implements OnInit {
   }
 
   // Search for the user in the database
-  search(email: string) {
+  search(email: string, createUser: boolean) {
     if(email){
       this.UsersService
         .searchUser(email)
         .subscribe(user => {
-          this.User = user});
+          this.User = user;
+          if(createUser && user.Email === undefined){
+            console.log("Could not find user. Creating one");
+            // Create a new user
+            this.add(this.userName);
+          }
+        });
     }
   }
 

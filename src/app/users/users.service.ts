@@ -13,13 +13,14 @@ import { User } from './user';
 
 const httpOptions = {
   headers: new HttpHeaders({
+    'Authorization': 'my-auth-token',
     'Content-Type': 'application/json',
   })
 };
 
 @Injectable()
 export class UsersService {
-  usersUrl = "http://10.136.163.6:3000/users"; // URL to web api
+  usersUrl = "http://10.136.205.121:3000/users"; // URL to web api
   
   private handleError: HandleError;
 
@@ -42,7 +43,7 @@ export class UsersService {
 
     // Post add a new hero to the database
   addUser(user: User): Observable<User> {
-    return this.http.post<User>(this.usersUrl, user, httpOptions)
+    return this.http.post<User>(this.usersUrl, user)
       .pipe(
         catchError(this.handleError('addUser', user))
       );
@@ -51,7 +52,7 @@ export class UsersService {
   // Delete: delete the user from the server
   deleteUser(email: string): Observable<unknown> {
     const url = `${this.usersUrl}/${email}`;
-    return this.http.delete(url, httpOptions)
+    return this.http.delete(url)
       .pipe(
         catchError(this.handleError('deleteUser'))
       );
