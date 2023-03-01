@@ -42,15 +42,14 @@ func (s *MemoryStorage) InsertUser(User *types.User) error {
 }
 
 func (s *MemoryStorage) UpdateUser(Email string, Name string) error {
-	user, err := s.GetUser(Email)
-
-	// Will return "no documents" error from GetUser() function if there is an error
-	if err != nil {
-		return err
+	
+	for _, user := range(s.Users) {
+		if user.Email == Email {
+			user.Name = Name
+		}
 	}
 
-	user.Name = Name
-	return err
+	return nil
 }
 
 func (s *MemoryStorage) DeleteUser(Email string) error {
