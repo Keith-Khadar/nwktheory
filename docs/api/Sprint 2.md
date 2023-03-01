@@ -7,6 +7,7 @@
   - ### Backend: 
     - Added functionality for users to add and delete their connections
     - Added error checking to handle invalid connections requesting to be added
+    - Added functionality to allow users to modify their profile information (currently only the name is modifiable but will add additioanl demographic information that users can modify)
     - Added CORS policy to allow remote origin requests between clients and the server
 
 # Frontend Unit Tests
