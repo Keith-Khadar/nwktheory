@@ -65,8 +65,9 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - {email} in the URL path must be equal to SourceUser in the HTTP body
 - **Note:** Connection data does in the body of the HTTP request and follows the connection struct format above
 - **Responses:**
-  - TODO
-
+  - 404 Not Found: Returned when the requested user to add a connection does not exist.
+  - 422 Unprocessable Entity: Returned when the body of the POST request does not meet the minimum data requirements for creating a connection (See requirements section above). Or the JSON in POST request body has an error.
+  - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
 
 ## Delete Information:
 
@@ -76,7 +77,8 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - {email} in the URL path should exist in the database
 - **Note:** The api will return an error if the user specified does not exist and will not delete any documents.
 - **Responses:**
-  - TODO
+  - 404 Not Found: Returned when the requested user does not exist.
+  - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
 
 #### DELETE /users/{email}/connections
 - **What it does:** Delete a user connection, identified by their email, and all their related information
@@ -86,7 +88,8 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - DestinationUser in the URL path as a query parameter (should exist in the database)
 - **Note:** The api will return an error if the user specified does not exist and will not delete any documents.
 - **Responses:**
-  - TODO
+  - 404 Not Found: Returned when the requested user to add a connection does not exist.
+  - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
 
 
 ## Modify Information:
@@ -98,4 +101,5 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - Name in the URL path as a query parameter (additional user sections will be added to allow more modification to a user's profile)
 - **Note:** The api will return an error if the user specified does not exist and will not change any documents.
 - **Responses:**
-  - TODO
+  - 404 Not Found: Returned when the requested user does not exist.
+  - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
