@@ -26,7 +26,7 @@
   - TestGetUser: checks that the GetUser() function properly retrieves the user from the storage implementations.
   - TestInsertUser: checks that the InsertUser() function properly inserts a user into the storage implementations.
   - TestDeleteUser: checks that the DeleteUser() function properly deletes a user from the storage implementations.
-# Backend Postman Tests
+## Backend Postman Tests
   - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function.
   - Test get second user by email: Test the infomration of retrieved second user is as expected through the GetUserByEmail() function.
  
