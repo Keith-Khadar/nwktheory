@@ -77,11 +77,17 @@ func (s *MongoStorage) InsertUser(user *types.User) error {
 func (s *MongoStorage) DeleteUser(Email string) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
+	_, err := s.GetUser(Email)
+
+	if err != nil {
+		return err
+	}
+
 	// Find correct user
 	filter := bson.M{"email": Email}
 
 	// Delete the intended user
-	_, err := coll.DeleteOne(context.TODO(), filter)
+	_, err = coll.DeleteOne(context.TODO(), filter)
 
 	// Will return error if it exists
 	return err
@@ -97,7 +103,7 @@ func (s *MongoStorage) UpdateUser(Email string, Name string) error {
 	_, err := s.GetUser(Email)
 
 	if err != nil {
-		return errors.New("invalid user")
+		return err
 	}
 
 	change := bson.M{"$set": bson.M{"name": Name}}
