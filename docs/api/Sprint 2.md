@@ -18,7 +18,7 @@
    - Home Page: This displays everything on the home page (the home page includes the graph)
    - Profile Page: This displays the profile page ( Nothing is shown here at the moment because this data is collected of Auth0 when the user is logged in)
    - Tabs: This displays the tabs that will be shown at the bottom of the app
-# Frontend Cypress Test
+## Frontend Cypress Test
    This is an E2E test that goes through the process of signing up for an account and logging into an account through Auth0. The first test is for signing up. Cypress will go through the sign-up process and if an account already exists on Auth0 it will stop there, otherwise it will confirm through the profile page that it is signed in properly. Similarly, for the log in process it will log in check the information shown in the profile page, confirm that the other pages work, and then log out.
 
 # Backend Unit Tests
