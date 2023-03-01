@@ -6,8 +6,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ChatPageRoutingModule } from './chat-page-routing.module';
-// Https Services
-import { ConfigModule } from '../config/config.module';
 
 
 @NgModule({
@@ -17,7 +15,6 @@ import { ConfigModule } from '../config/config.module';
     CommonModule,
     FormsModule,
     ChatPageRoutingModule,
-    ConfigModule,
     UsersModule
   ]
 })

@@ -1,16 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-
+import { Component, Inject, OnInit} from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from '@angular/common';
 import { UsersService } from './users.service';
-export interface User{
-  id: number;
-  name: string;
-}
-
-export interface UserData{
-  Name: string;
-  Email: string;
-  Connections: [];
-}
+import { User } from './user';
 
 @Component({
   selector: 'app-users',
@@ -19,81 +11,78 @@ export interface UserData{
   providers: [UsersService]
 })
 export class UsersComponent implements OnInit {
-  users: User[] = [];
-  userData: UserData | undefined;
-  editUser: User | undefined; // the user currently being edited
-  userName = '';
+  // For our Backend
+  User: User | undefined;
 
-  constructor(private UsersService: UsersService) {}
+  // Collected from Auth0
+  userEmail: string = '';
+  userName: string = '';
 
-  @ViewChild('userEditInput')
-  set userEditInput(element: 
-    ElementRef<HTMLInputElement>) {
-      if (element){
-        element.nativeElement.focus();
-      }
-    }
-  
+  constructor(private UsersService: UsersService, @Inject(DOCUMENT) public document: Document,
+  public auth: AuthService) {}
+
+
+  // When we first connect to the website check if the user exists and if they do, set them as the User
+  // If they do not create a profile for them in our database.
+
   ngOnInit(): void {
-    // this.getUsers();
+    this.auth.user$.subscribe((user) => {
+      this.userEmail = user!.email!
+      this.userName = user!.name!
+
+      console.log(this.userEmail);
+      this.search(this.userEmail, true);
+    })
   }
 
-  // getUsers(): void {
-  //   this.UsersService.getUsers()
-  //     .subscribe(users => (this.users = users));
-  // }
 
+  // Add a new user
   add(name: string): void {
-    this.editUser = undefined;
     name = name.trim();
     if(!name){
       return;
     }
 
-    // The server will generate the id for this new user
-    const newUser: User = { name } as User;
+    const newUser: User = {
+      Name: name,
+      Email: this.userEmail,
+      Connections: []
+    };
+
     this.UsersService
       .addUser(newUser)
-      .subscribe(user => this.users.push(user));
+      .subscribe(user => this.User);
   }
 
-  delete(user: User): void {
-    this.users = this.users.filter(u => u !== user);
+  // Delete user
+  delete(): void {
     this.UsersService
-      .deleteUser(user.id)
+      .deleteUser(this.userEmail)
       .subscribe();
   }
 
-  edit(userName: string){
-    this.update(userName);
-    this.editUser = undefined;
-  }
-
-  search(searchTerm: string) {
-    this.editUser = undefined;
-    if(searchTerm){
+  // Search for the user in the database
+  search(email: string, createUser: boolean) {
+    if(email){
       this.UsersService
-        .searchUsers(searchTerm)
-        .subscribe(userdata => {
-          this.userData = userdata
-        console.log(userdata.Name)});
-    } else{
-      // this.getUsers();
+        .searchUser(email)
+        .subscribe(user => {
+          this.User = user;
+          if(createUser && user.Email === undefined){
+            console.log("Could not find user. Creating one");
+            // Create a new user
+            this.add(this.userName);
+          }
+        });
     }
   }
 
+  // Update the user
   update(userName: string){
-    if(userName && this.editUser && this.editUser.name !== userName){
+    if(userName){
       this.UsersService
-        .updateUser({...this.editUser, name: userName})
-        .subscribe(user => {
-          // replace the user in the heroes list with update from server
-          const ix = user ? this.users.findIndex(u => u.id === user.id): -1;
-          if(ix > -1){
-            this.users[ix] = user;
-          }
-        });
-        this.editUser = undefined;
+        .updateUser(this.userEmail,userName)
+        .subscribe();
     }
   }
 }

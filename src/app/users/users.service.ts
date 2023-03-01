@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
@@ -7,27 +8,20 @@ import { catchError } from 'rxjs';
 
 import { HttpErrorHandler, HandleError } from './../http-error-handler.service';
 
+import { User } from './user';
+
+
 const httpOptions = {
   headers: new HttpHeaders({
+    'Authorization': 'my-auth-token',
     'Content-Type': 'application/json',
-    Authorization: 'my-auth-token'
   })
 };
 
-export interface User{
-  id: number;
-  name: string;
-}
-
-export interface UserData{
-  Name: string;
-  Email: string;
-  Connections: [];
-}
-
 @Injectable()
 export class UsersService {
-  usersUrl = 'http://localhost:7000/users'; // URL to web api
+  usersUrl = "http://10.136.205.121:3000/users"; // URL to web api
+  
   private handleError: HandleError;
 
   constructor(
@@ -36,53 +30,40 @@ export class UsersService {
       this.handleError = httpErrorHandler.createHandleError('UserService');
   }
 
-  // // Get users from the server
-  // getUsers(): Observable<User[]> {
-  //   return this.http.get<User[]>(this.usersUrl)
-  //     .pipe(
-  //       catchError(this.handleError('getUser', []))
-  //     );
-  // }
-
-  // Get users whose name contains search term
-  searchUsers(term: string): Observable<UserData>{
-    term = term.trim();
-
-    // Add safe, URL encoded search perameter if there is a search term
-      return this.http.get<UserData>(this.usersUrl + "/"+ term)
+  // Get user whose name contains search term
+  searchUser(email: string): Observable<User>{
+    email = email.trim();
+    const url = this.usersUrl + "/" + email;
+      return this.http.get<User>(url)
         .pipe(
-          catchError(this.handleError<UserData>
-            ('searchUsers'))
+          catchError(this.handleError<User>
+            ('searchUser'))
         );
     }
-  
-  // Save Methods
 
-  // Post add a new hero to the database
+    // Post add a new hero to the database
   addUser(user: User): Observable<User> {
-    return this.http.post<User>(this.usersUrl, user, httpOptions)
+    return this.http.post<User>(this.usersUrl, user)
       .pipe(
         catchError(this.handleError('addUser', user))
       );
   }
 
   // Delete: delete the user from the server
-  deleteUser(id: number): Observable<unknown> {
-    const url = `${this.usersUrl}/${id}`; // Delete api/heroes/id
-    return this.http.delete(url, httpOptions)
+  deleteUser(email: string): Observable<unknown> {
+    const url = `${this.usersUrl}/${email}`;
+    return this.http.delete(url)
       .pipe(
         catchError(this.handleError('deleteUser'))
       );
   }
 
   // Put: update the hero on the server. Returns the updated hero upon sucess
-  updateUser(user: User): Observable<User> {
-    httpOptions.headers = 
-      httpOptions.headers.set('Authprization', 'my-new-auth-token');
-    
-    return this.http.put<User>(this.usersUrl, user, httpOptions)
+  updateUser(email: string, name : string): Observable<unknown> {  
+    const url = this.usersUrl + '/' + email + '?' + 'name=' + name; 
+    return this.http.put<User>(url, httpOptions)
       .pipe(
-        catchError(this.handleError('updateUser', user))
+        catchError(this.handleError('updateUserName'))
       );
   }
 

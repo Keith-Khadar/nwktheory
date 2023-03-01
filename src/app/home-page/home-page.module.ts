@@ -8,8 +8,6 @@ import { CommonModule } from '@angular/common';
 
 import { HomePageRoutingModule } from './home-page-routing.module';
 
-// Https Services
-import { ConfigModule } from '../config/config.module';
 
 
 @NgModule({
@@ -19,7 +17,6 @@ import { ConfigModule } from '../config/config.module';
     CommonModule,
     FormsModule,
     HomePageRoutingModule,
-    ConfigModule,
     UsersModule
   ]
 })
