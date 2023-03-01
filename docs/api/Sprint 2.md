@@ -2,7 +2,9 @@
 
 ## What we have done:
   - ### Frontend:
-    - 
+    - Added functionality to send http requests to the backend and receive responses
+    - Added automatic profile creation. If the user signs in using Auth0 for the first time we will create a profile for them on our database, otherwise we will get their data from the database
+    - Added an undirected graph that will be used for diplaying the connections between users
   
   - ### Backend: 
     - Added functionality for users to add and delete their connections
@@ -11,11 +13,20 @@
     - Added CORS policy to allow remote origin requests between clients and the server
 
 # Frontend Unit Tests
-
+   - Chat page: This displays the chat page (this page is empty for now, but we will add functionality for chatting next sprint) 
+   - Graph: This displays the graph that we are generating from High Charts
+   - Home Page: This displays everything on the home page (the home page includes the graph)
+   - Profile Page: This displays the profile page ( Nothing is shown here at the moment because this data is collected of Auth0 when the user is logged in)
+   - Tabs: This displays the tabs that will be shown at the bottom of the app
+# Frontend Cypress Test
+   This is an E2E test that goes through the process of signing up for an account and logging into an account through Auth0. The first test is for signing up. Cypress will go through the sign-up process and if an account already exists on Auth0 it will stop there, otherwise it will confirm through the profile page that it is signed in properly. Similarly, for the log in process it will log in check the information shown in the profile page, confirm that the other pages work, and then log out.
 
 # Backend Unit Tests
-
-
+## Storage Tests
+  - TestGetUser: checks that the GetUser() function properly retrieves the user from the storage implementations.
+  - TestInsertUser: checks that the InsertUser() function properly inserts a user into the storage implementations.
+  - TestDeleteUser: checks that the DeleteUser() function properly deletes a user from the storage implementations.
+ 
 # User Controls
 
 ## User Struct:
