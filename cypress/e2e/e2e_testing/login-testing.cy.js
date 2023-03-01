@@ -55,8 +55,8 @@ describe('Testing account login and retrieval', () => {
 
     // Check to make sure you are logged in
     cy.get('#tab-button-Profile').click()
-    cy.get('app-user-profile').find('li').should('have.length', 2)
-    cy.get('app-user-profile').find('li').eq(0).contains(`${email}`)
+    cy.get('app-user-profile li').should('have.length', 2)
+    cy.get('app-user-profile li').eq(0).contains(`${email}`)
     cy.wait(500)
 
 
