@@ -231,6 +231,7 @@ func ping(client *mongo.Client, ctx context.Context) error {
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return err
 	}
-	fmt.Println("MongoDB connected successfully")
+	greenText := color.New(color.FgHiGreen).SprintFunc()
+	fmt.Printf("%v\n",greenText("MongoDB connected successfully"))
 	return nil
 }
