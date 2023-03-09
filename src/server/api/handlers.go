@@ -1,10 +1,16 @@
 package api
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"image/jpeg"
+	"image/png"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"server/types"
 	"strings"
 
@@ -98,9 +104,12 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Get id from URL path
 	email := vars["email"]
+
+	// Parameters from URL
 	queriedUpdateName := r.URL.Query().Get("name")
 
-	err := s.store.UpdateUser(email, queriedUpdateName)
+
+	err := s.store.UpdateUser(email, queriedUpdateName, "")
 
 	if err != nil {
 		// Return HTTP 404 if user does not exist in db
@@ -112,6 +121,73 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 		// Exit here if error
 		return
+	}
+}
+
+func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Endpoint Hit: handleSetUserProfilePicture from %v\n", r.RemoteAddr)
+
+	// Retrieve mux variables from URL
+	vars := mux.Vars(r)
+
+	// Get Email from URL path
+	reqUserEmail := vars["email"]
+	user, err := s.store.GetUser(reqUserEmail)
+	_ = user.Email // **REMOVE LATER**
+
+	// Check if user exists in data base
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
+	}
+
+	// Store Image
+	var fieldMapForBody map[string]*json.RawMessage
+	// var file *os.File
+
+	// Save json image data
+	data, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(data, &fieldMapForBody)
+
+	// Parse data string to retrieve image data
+	image, _ := json.Marshal(fieldMapForBody["image"])
+	imageIndex := strings.Index(string(image), ",")
+	rawImage := string(image)[imageIndex+1:]
+
+	// Encodede Image DataUrl
+	unbased, _ := base64.StdEncoding.DecodeString(string(rawImage))
+
+	res := bytes.NewReader(unbased)
+
+	// Add path to store in file system
+	path, _ := os.Getwd()
+	fmt.Println(path)
+
+	// Decode the images based on format
+	switch strings.TrimSuffix(string(image[0:imageIndex]), ";base64") {
+	case "image/png":
+		// decode png
+		// pngI, err := png.Decode(res)
+		_, _ = png.Decode(res)
+
+		fmt.Println("Png generated")
+		
+
+	case "image/jpeg":
+		// decode jpeg
+		// jpgI, err := jpeg.Decode(res)
+		_, _ = jpeg.Decode(res)
+	
+	default:
+		err := errors.New("invalid image format")
+		ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid image format!")
 	}
 }
 

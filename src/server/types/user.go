@@ -3,6 +3,7 @@ package types
 type User struct {
 	Name   string `json:"Name" bson:"name"`
 	Email  string `json:"Email" bson:"email"`
+	ProfilePic string `json:"ProfilePic"`
 	Connections []Connection `json:"Connections" bson:"connections"`
 }
 
