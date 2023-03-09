@@ -34,6 +34,7 @@ func (s *Server) Start() error {
 	router.HandleFunc("/users", s.handleCreateUser).Methods("POST", "OPTIONS")
 	router.HandleFunc("/users/{email}", s.handleDeleteUser).Methods("DELETE", "OPTIONS")
 	router.HandleFunc("/users/{email}", s.handleUpdateUser).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/users/{email}/image", s.handleSetUserProfilePic).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/users/{email}/connections", s.handleCreateUserConnection).Methods("POST", "OPTIONS")
 	router.HandleFunc("/users/{email}/connections", s.handleDeleteUserConnection).Methods("DELETE", "OPTIONS")
 
