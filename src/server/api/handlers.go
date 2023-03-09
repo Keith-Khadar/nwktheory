@@ -161,6 +161,14 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	imageIndex := strings.Index(string(image), ",")
 	rawImage := string(image)[imageIndex+1:]
 
+	// Check if data string is properly formated
+	// Size 7 is for "image/x" with x being a 1 character file extension
+	if imageIndex < 7 {
+		err = errors.New("invalid image data string")
+		ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid image data string")
+		return
+	}
+
 	// Encodede Image DataUrl
 	unbased, _ := base64.StdEncoding.DecodeString(string(rawImage))
 
