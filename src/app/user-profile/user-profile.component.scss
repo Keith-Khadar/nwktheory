@@ -1,0 +1,34 @@
+.profile-card {
+    max-width: 600px;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-image-container {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-top: 50px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  ion-item {
+    border: none;
+    padding-left: 0;
+  }
+  
+  ion-icon {
+    color: #007bff;
+    margin-right: 8px;
+  }

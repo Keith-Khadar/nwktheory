@@ -1,5 +1,23 @@
-user-profile works!
-<ul *ngIf="auth.user$ | async as user">
-    <li>{{ user.name }}</li>
-    <li>{{ user.email }}</li>
-</ul>`
+<ion-content class="ion-padding">
+<ion-card class="profile-card" *ngIf="auth.user$ | async as user">
+    <div class="profile-image-container">
+    <img class="profile-image" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png">
+    </div>
+
+    <ion-card-header>
+    <ion-card-title>{{ user.name }}</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+    <ion-item>
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>age</ion-label>
+    </ion-item>
+
+    <ion-item>
+        <ion-icon name="mail-outline"></ion-icon>
+        <ion-label>{{ user.email }}</ion-label>
+    </ion-item>
+    </ion-card-content>
+</ion-card>
+</ion-content>
