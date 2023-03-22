@@ -133,7 +133,6 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	// Get Email from URL path
 	reqUserEmail := vars["email"]
 	user, err := s.store.GetUser(reqUserEmail)
-	_ = user.Email // **REMOVE LATER**
 
 	// Check if user exists in data base
 	if err != nil {
@@ -159,7 +158,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	// Parse data string to retrieve image data
 	image, _ := json.Marshal(fieldMapForBody["image"])
 	imageIndex := strings.Index(string(image), ",")
-	rawImage := string(image)[imageIndex+1:]
+	rawImage := string(image)[imageIndex+1:len(string(image)) - 1] // Remove the trailing "
 
 	// Check if data string is properly formated
 	// Size 7 is for "image/x" with x being a 1 character file extension
@@ -174,24 +173,100 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 
 	res := bytes.NewReader(unbased)
 
-	// Add path to store in file system
+	// Add path to store in file system; default if src/server
+	// Next append image storage directory
 	path, _ := os.Getwd()
-	fmt.Println(path)
+	imagePath := path + "/data/images/" 
+
+	// Create base image name
+	imageName := user.Email + "_profile."
 
 	// Decode the images based on format
-	switch strings.TrimSuffix(string(image[0:imageIndex]), ";base64") {
+	// Starts at index 1 to remove starting "
+	switch strings.TrimPrefix(string(image[1:imageIndex]), ";base64") {
 	case "image/png":
 		// decode png
-		// pngI, err := png.Decode(res)
-		_, _ = png.Decode(res)
+		pngI, err := png.Decode(res)
 
-		fmt.Println("Png generated")
+		// Add extension to name
+		imageName = imageName + "png"
+		finalImgPath := imagePath + imageName;
+
+		// Check if user has existing profile picture
+		if user.ProfilePic != "" {
+			os.Remove(user.ProfilePic)
+		}
+
+		// Check for errors decoding PNG data
+		// Report and exit if there is an error
+		if err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not decode PNG data!")
+			return
+		}
+
+		// Create file
+		f, err := os.Create(finalImgPath)
+
+		// Check for errors in file creation
+		// Report and exit if true
+		if err != nil {
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+			return
+		}
+
+		// If error creating PNG report and exit
+		if err = png.Encode(f, pngI); err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not encode PNG!")
+			return
+		}
+
+		// Update user object with new profile picture path
+		s.store.UpdateUser(user.Email, "", finalImgPath)
+
+		// Print successful update to console
+		fmt.Printf("Profile picture update for %v || Type: PNG\n", user.Email)
 		
-
 	case "image/jpeg":
 		// decode jpeg
-		// jpgI, err := jpeg.Decode(res)
-		_, _ = jpeg.Decode(res)
+		jpegI, err := jpeg.Decode(res)
+
+		// Add extension to name
+		imageName = imageName + "jpeg"
+		finalImgPath := imagePath + imageName;
+
+		// Check if user has existing profile picture
+		if user.ProfilePic != "" {
+			os.Remove(user.ProfilePic)
+		}
+
+		// Check for errors decoding JPEG data
+		// Report and exit if there is an error
+		if err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not decode JPEG data!")
+			return
+		}
+
+		// Create file
+		f, err := os.Create(finalImgPath)
+
+		// Check for errors in file creation
+		// Report and exit if true
+		if err != nil {
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+			return
+		}
+
+		// If error creating JPEG report and exit
+		if err = jpeg.Encode(f, jpegI, nil); err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not encode JPEG!")
+			return
+		}
+
+		// Update user object with new profile picture path
+		s.store.UpdateUser(user.Email, "", finalImgPath)
+
+		// Print successful update to console
+		fmt.Printf("Profile picture update for %v || Type: JPEG\n", user.Email)
 	
 	default:
 		err := errors.New("invalid image format")
@@ -250,7 +325,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 		var newConnection = connection
 		newConnection.SourceUser = connection.DestinationUser
 		newConnection.DestinationUser = connection.SourceUser
-		err = s.store.InsertConnection(connection.DestinationUser, &newConnection)
+		_ = s.store.InsertConnection(connection.DestinationUser, &newConnection)
 	}
 }
 
