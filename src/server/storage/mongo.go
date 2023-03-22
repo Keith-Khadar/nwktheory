@@ -107,7 +107,7 @@ func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string) 
 		return err
 	}
 
-	// Update the profile pic
+	// Update the name
 	if Name != "" {
 		change := bson.M{"$set": bson.M{"name": Name}}
 
