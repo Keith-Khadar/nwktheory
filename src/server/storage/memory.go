@@ -41,11 +41,23 @@ func (s *MemoryStorage) InsertUser(User *types.User) error {
 	return nil
 }
 
-func (s *MemoryStorage) UpdateUser(Email string, Name string) error {
-	
-	for _, user := range(s.Users) {
-		if user.Email == Email {
-			user.Name = Name
+func (s *MemoryStorage) UpdateUser(Email string, Name string, ProfilePic string) error {
+
+	// Update the name
+	if Name != "" {
+		for _, user := range(s.Users) {
+			if user.Email == Email {
+				user.Name = Name
+			}
+		}
+	}
+
+	// Update the profile pic
+	if ProfilePic != "" {
+		for _, user := range(s.Users) {
+			if user.Email == Email {
+				user.ProfilePic = ProfilePic
+			}
 		}
 	}
 
