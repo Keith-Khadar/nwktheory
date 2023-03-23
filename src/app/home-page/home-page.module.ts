@@ -1,3 +1,4 @@
+import { UsersModule } from './../users/users.module';
 import { GraphComponent } from './../graph/graph.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -8,13 +9,15 @@ import { CommonModule } from '@angular/common';
 import { HomePageRoutingModule } from './home-page-routing.module';
 
 
+
 @NgModule({
   declarations: [HomePageComponent, GraphComponent],
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    UsersModule
   ]
 })
 export class HomePageModule { }

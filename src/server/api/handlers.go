@@ -12,12 +12,12 @@ import (
 )
 
 func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the HomePage!")
+	fmt.Fprintf(w, "Welcome to the HomePage! from %v\n", r.RemoteAddr)
 	fmt.Println("Endpoint Hit: homePage")
 }
 
 func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleGetUserByID")
+	fmt.Printf("Endpoint Hit: handleGetUserByEmail from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
@@ -44,31 +44,31 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
-    fmt.Println("Endpoint Hit: handleCreateUser")
-    // Get the body of our POST request
-    reqBody, _ := ioutil.ReadAll(r.Body)
+	fmt.Printf("Endpoint Hit: handleCreateUser from %v\n", r.RemoteAddr)
+	// Get the body of our POST request
+	reqBody, _ := ioutil.ReadAll(r.Body)
 
-    // Unmarshal body of POST request into new User struct
-    var user types.User
-    json.Unmarshal(reqBody, &user)
+	// Unmarshal body of POST request into new User struct
+	var user types.User
+	json.Unmarshal(reqBody, &user)
 
-    err := s.store.InsertUser(&user)
+	err := s.store.InsertUser(&user)
 
-    if err != nil {
+	if err != nil {
 
-        // Invalid user submission
-        if strings.Contains(fmt.Sprint(err), "invalid user") {
-            ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
+		// Invalid user submission
+		if strings.Contains(fmt.Sprint(err), "invalid user") {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
 
-        } else { // Catch all
+		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 
-        }
-    }
+		}
+	}
 }
 
 func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleDeleteUser")
+	fmt.Printf("Endpoint Hit: handleDeleteUser from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
@@ -78,13 +78,20 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	err := s.store.DeleteUser(email)
 
 	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
 
-		ApiHttpError(w, err, http.StatusInternalServerError, "")
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
 	}
 }
 
 func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleUpdateUser")
+	fmt.Printf("Endpoint Hit: handleUpdateUser from %v\n", r.RemoteAddr)
 
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
@@ -94,15 +101,22 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	queriedUpdateName := r.URL.Query().Get("name")
 
 	err := s.store.UpdateUser(email, queriedUpdateName)
-	
-	if err != nil {
-		ApiHttpError(w, err, http.StatusInternalServerError, "")
 
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
 	}
 }
 
 func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Endpoint Hit: handleCreateUserConnection")
+	fmt.Printf("Endpoint Hit: handleCreateUserConnection from %v\n", r.RemoteAddr)
 
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
@@ -116,15 +130,11 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 
 	user, err := s.store.GetUser(reqUserEmail)
 
-	// Handle preliminary errors
+	// Handle preliminary error
 	if err != nil {
 		if strings.Contains(fmt.Sprint(err), "no documents") {
 			// Return HTTP 404 if user does not exist in db
 			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
-
-		} else if strings.Compare(reqUserEmail, connection.SourceUser) != 0 { 
-			// Return HTTP 422 if requested user by email in /users/{email}/connections does not match soureUser in connection
-			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Requested user does not match SourceUser in connection!")
 
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
@@ -134,28 +144,69 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	if strings.Compare(reqUserEmail, connection.SourceUser) != 0 {
+		// Return HTTP 422 if requested user by email in /users/{email}/connections does not match soureUser in connection
+
+		ApiHttpError(w, err, http.StatusUnprocessableEntity, "Requested user does not match SourceUser in connection!")
+		return
+	}
+
 	err = s.store.InsertConnection(user.Email, &connection)
 
 	// Return error if mongo returns error when inserting a connection
 	if err != nil {
-		if  strings.Contains(fmt.Sprint(err), "invalid connection") {
+		if strings.Contains(fmt.Sprint(err), "invalid connection") {
 			// Return HTTP 422 if requested connection to add is invalid
 			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid connection format!")
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 		}
+	} else {
+		//Adding mirror conneciton for desitnation user
+		var newConnection = connection
+		newConnection.SourceUser = connection.DestinationUser
+		newConnection.DestinationUser = connection.SourceUser
+		err = s.store.InsertConnection(connection.DestinationUser, &newConnection)
 	}
 }
 
 func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Printf("Endpoint Hit: handleDeleteUserConnection from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
 
 	// Get Email from URL path
 	reqUserEmail := vars["email"]
 
+	// Check if user exists in db
+	_, err := s.store.GetUser(reqUserEmail)
+
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
+	}
+
+	// If SourceUser not specificied in a query parameter get it from url path variable
 	queriedSourceUser := r.URL.Query().Get("sourceuser")
+	if queriedSourceUser == "" {
+		queriedSourceUser = reqUserEmail
+	}
+
 	queriedDestinationUser := r.URL.Query().Get("destinationuser")
 
-	s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
+	err = s.store.DeleteConnection(reqUserEmail, queriedSourceUser, queriedDestinationUser)
+
+	if err != nil {
+		ApiHttpError(w, err, http.StatusInternalServerError, "")
+	} else {
+		s.store.DeleteConnection(queriedDestinationUser, queriedDestinationUser, queriedSourceUser)
+	}
 }

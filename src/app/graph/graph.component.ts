@@ -47,6 +47,10 @@ export class GraphComponent implements AfterViewInit {
           dataLabels: {
             enabled: true
           },
+          draggable: false,
+          layoutAlgorithm: {
+            enableSimulation: false,
+          },
           data: [
             ['Miracle Mile Medical Center', 'Samer Alaiti M.D.'],
             ['Miracle Mile Medical Center', 'Platinum Toxicology'],
