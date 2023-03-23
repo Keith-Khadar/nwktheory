@@ -94,7 +94,7 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 	return err
 }
 
-func (s *MongoStorage) UpdateUser(Email string, Name string) error {
+func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
 
 	// Select document with Email from function parameter
@@ -107,11 +107,31 @@ func (s *MongoStorage) UpdateUser(Email string, Name string) error {
 		return err
 	}
 
-	change := bson.M{"$set": bson.M{"name": Name}}
+	// Update the name
+	if Name != "" {
+		change := bson.M{"$set": bson.M{"name": Name}}
 
-	_, err = coll.UpdateOne(context.TODO(), filter, change)
+		_, err = coll.UpdateOne(context.TODO(), filter, change)
 
-	return err
+		// Check for errors
+		if err != nil {
+			return err
+		}
+	}
+
+	// Update the profile pic
+	if ProfilePic != "" {
+		change := bson.M{"$set": bson.M{"profilepic": ProfilePic}}
+
+		_, err = coll.UpdateOne(context.TODO(), filter, change)
+
+		// Check for errors
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *MongoStorage) InsertConnection(Email string, connection *types.Connection) error {
