@@ -149,8 +149,8 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - 422 Unprocessable Entity: Returned when the data provided does match or can't be processed as a valid image format. (PNG, JPEG)
   - 500 Internal Server Error: Returned when server encounters file creation errors. This is related to interaction with the OS.
 
-Image Data Format PUT Body:
-- **Valid Image Formats:** png, jpeg
+**Image Data Format PUT Body**:
+- Valid Image Formats: png, jpeg
 
 **Example:**
   ```json 
