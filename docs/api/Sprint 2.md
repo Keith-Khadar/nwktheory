@@ -72,10 +72,13 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 
 #### GET /users/{email}
 - **What it does:** Return one user and their data identified by email
-- **Note:** Requested user should exist in the database
+- **Note:** Requested user should exist in the database. When using paramters only the requested parameters will be returned. If no parameters are specified all the user's data is returned.
+- **Parameters:** name, profilepic, email, connections
 - **Responses:**
   - 404 Not Found: Returned when the requested user does not exist.
   - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
+
+- **Example:** http://localhost:3000/users/{email}?name=true&email=true
 
 
 ## Create Information:

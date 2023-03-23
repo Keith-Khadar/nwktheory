@@ -32,7 +32,11 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	// Get id from URL path
 	email := vars["email"]
 
+	// Get user from db
 	user, err := s.store.GetUser(email)
+
+	// Create new user to save requested info
+	var newUser types.User
 
 	if err != nil {
 
@@ -47,8 +51,35 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// No error encode user data
-	json.NewEncoder(w).Encode(user)
+	nameParam := r.URL.Query().Get("name")
+	if nameParam == "true" {
+		newUser.Name = user.Name
+	}
+
+	emailParam := r.URL.Query().Get("email")
+	if emailParam == "true" {
+		newUser.Email = user.Email
+	}
+
+	profilePicParam := r.URL.Query().Get("profilepic")
+	if profilePicParam == "true" {
+		newUser.ProfilePic = user.ProfilePic
+	}
+
+	connectionParam := r.URL.Query().Get("connections")
+	if connectionParam == "true" {
+		newUser.Connections = user.Connections
+	}
+
+	// No parameters given return full user struct with all data
+	if nameParam == "" && emailParam == "" && profilePicParam == "" &&
+		connectionParam == "" {
+			json.NewEncoder(w).Encode(user)
+			return
+		}
+
+	// Return partial data based on params
+	json.NewEncoder(w).Encode(newUser)
 }
 
 func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
