@@ -1,17 +1,35 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, Inject } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import HighchartsNetworkGraph from 'highcharts/modules/networkgraph';
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from '@angular/common';
+
 
 HighchartsNetworkGraph(Highcharts);
 
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
-  styleUrls: ['./graph.component.scss']
+  styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements AfterViewInit {
+  constructor(@Inject(DOCUMENT) public document: Document,
+  public auth: AuthService) {}
+
+  userEmail: string = ""
+  userName: string = ""
+
   public ngAfterViewInit(): void {
     this.createChartNWK();
+    this.auth.user$.subscribe((user) => {
+      this.userEmail = user!.email!
+      this.userName = user!.name!
+    })
+    const req = fetch(`http://localhost:3000/users/${this.userEmail}`)
+    req.then((res) => {
+        console.log(res.json())
+      }
+    )
   }
 
   private createChartNWK(): void {
@@ -99,8 +117,4 @@ export class GraphComponent implements AfterViewInit {
     }, 1000);
     */
   }
-
-  title = 'nwktheory';
-  constructor(){
-  } 
 }
