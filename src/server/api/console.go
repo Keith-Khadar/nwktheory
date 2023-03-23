@@ -6,5 +6,7 @@ import (
 )
 
 func LogTime() {
-	fmt.Printf("%v-%v-%v %v:%v:%v | ", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	current_time := time.Now()
+	fmt.Printf(current_time.Format("2006-01-02 15:04:05"))
+	fmt.Printf(" | ")
 }
