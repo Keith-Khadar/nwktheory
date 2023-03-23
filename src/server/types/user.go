@@ -1,10 +1,10 @@
 package types
 
 type User struct {
-	Name   string `json:"Name" bson:"name"`
-	Email  string `json:"Email" bson:"email"`
-	ProfilePic string `json:"ProfilePic"`
-	Connections []Connection `json:"Connections" bson:"connections"`
+	Name   string `json:"Name,omitempty" bson:"name"`
+	Email  string `json:"Email,omitempty" bson:"email"`
+	ProfilePic string `json:"ProfilePic,omitempty"`
+	Connections []Connection `json:"Connections,omitempty" bson:"connections"`
 }
 
 func ValidateUser(u *User) bool { 
