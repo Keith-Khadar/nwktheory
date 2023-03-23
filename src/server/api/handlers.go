@@ -1,10 +1,16 @@
 package api
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"image/jpeg"
+	"image/png"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"server/types"
 	"strings"
 
@@ -98,9 +104,12 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Get id from URL path
 	email := vars["email"]
+
+	// Parameters from URL
 	queriedUpdateName := r.URL.Query().Get("name")
 
-	err := s.store.UpdateUser(email, queriedUpdateName)
+
+	err := s.store.UpdateUser(email, queriedUpdateName, "")
 
 	if err != nil {
 		// Return HTTP 404 if user does not exist in db
@@ -112,6 +121,156 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 		// Exit here if error
 		return
+	}
+}
+
+func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Endpoint Hit: handleSetUserProfilePicture from %v\n", r.RemoteAddr)
+
+	// Retrieve mux variables from URL
+	vars := mux.Vars(r)
+
+	// Get Email from URL path
+	reqUserEmail := vars["email"]
+	user, err := s.store.GetUser(reqUserEmail)
+
+	// Check if user exists in data base
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
+	}
+
+	// Store Image
+	var fieldMapForBody map[string]*json.RawMessage
+	// var file *os.File
+
+	// Save json image data
+	data, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(data, &fieldMapForBody)
+
+	// Parse data string to retrieve image data
+	image, _ := json.Marshal(fieldMapForBody["image"])
+	imageIndex := strings.Index(string(image), ",")
+	rawImage := string(image)[imageIndex+1:len(string(image)) - 1] // Remove the trailing "
+
+	// Check if data string is properly formated
+	// Size 7 is for "image/x" with x being a 1 character file extension
+	if imageIndex < 7 {
+		err = errors.New("invalid image data string")
+		ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid image data string")
+		return
+	}
+
+	// Encodede Image DataUrl
+	unbased, _ := base64.StdEncoding.DecodeString(string(rawImage))
+
+	res := bytes.NewReader(unbased)
+
+	// Add path to store in file system; default if src/server
+	// Next append image storage directory
+	path, _ := os.Getwd()
+	imagePath := path + "/data/images/" 
+
+	// Create base image name
+	imageName := user.Email + "_profile."
+
+	// Decode the images based on format
+	// Starts at index 1 to remove starting "
+	switch strings.TrimPrefix(string(image[1:imageIndex]), ";base64") {
+	case "image/png":
+		// decode png
+		pngI, err := png.Decode(res)
+
+		// Add extension to name
+		imageName = imageName + "png"
+		finalImgPath := imagePath + imageName;
+
+		// Check if user has existing profile picture
+		if user.ProfilePic != "" {
+			os.Remove(user.ProfilePic)
+		}
+
+		// Check for errors decoding PNG data
+		// Report and exit if there is an error
+		if err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not decode PNG data!")
+			return
+		}
+
+		// Create file
+		f, err := os.Create(finalImgPath)
+
+		// Check for errors in file creation
+		// Report and exit if true
+		if err != nil {
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+			return
+		}
+
+		// If error creating PNG report and exit
+		if err = png.Encode(f, pngI); err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not encode PNG!")
+			return
+		}
+
+		// Update user object with new profile picture path
+		s.store.UpdateUser(user.Email, "", finalImgPath)
+
+		// Print successful update to console
+		fmt.Printf("Profile picture update for %v || Type: PNG\n", user.Email)
+		
+	case "image/jpeg":
+		// decode jpeg
+		jpegI, err := jpeg.Decode(res)
+
+		// Add extension to name
+		imageName = imageName + "jpeg"
+		finalImgPath := imagePath + imageName;
+
+		// Check if user has existing profile picture
+		if user.ProfilePic != "" {
+			os.Remove(user.ProfilePic)
+		}
+
+		// Check for errors decoding JPEG data
+		// Report and exit if there is an error
+		if err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not decode JPEG data!")
+			return
+		}
+
+		// Create file
+		f, err := os.Create(finalImgPath)
+
+		// Check for errors in file creation
+		// Report and exit if true
+		if err != nil {
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+			return
+		}
+
+		// If error creating JPEG report and exit
+		if err = jpeg.Encode(f, jpegI, nil); err != nil {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "Could not encode JPEG!")
+			return
+		}
+
+		// Update user object with new profile picture path
+		s.store.UpdateUser(user.Email, "", finalImgPath)
+
+		// Print successful update to console
+		fmt.Printf("Profile picture update for %v || Type: JPEG\n", user.Email)
+	
+	default:
+		err := errors.New("invalid image format")
+		ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid image format!")
 	}
 }
 
@@ -166,7 +325,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 		var newConnection = connection
 		newConnection.SourceUser = connection.DestinationUser
 		newConnection.DestinationUser = connection.SourceUser
-		err = s.store.InsertConnection(connection.DestinationUser, &newConnection)
+		_ = s.store.InsertConnection(connection.DestinationUser, &newConnection)
 	}
 }
 
