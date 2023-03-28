@@ -144,10 +144,20 @@ func TestInsertConnection(t *testing.T) {
 		Weight: 0,
 	}
 
+	var mirrorConn *types.Connection = &types.Connection{
+		SourceUser: "martha@test.com",
+		DestinationUser: "jim@test.com",
+		Weight: 0,
+	}
+
+	// Insert users to db
+	s.InsertUser(userJim)
+	s.InsertUser(userMartha)
+
 	// Insert connection
 	s.InsertConnection(userJim.Email, jimToMarthaConn)
 
 	// Check connection was added to Jim's user object
-	// Need a function to easily grab a specific connection
-	_ = userMartha.Name
+	assert.EqualValues(t, jimToMarthaConn.DestinationUser, userJim.Connections[0].DestinationUser)
+	assert.Equal(t, mirrorConn.DestinationUser, userMartha.Connections[0].DestinationUser)
 }

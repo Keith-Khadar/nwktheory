@@ -81,6 +81,7 @@ func (s *MemoryStorage) DeleteUser(Email string) error {
 
 func (s *MemoryStorage) InsertConnection(Email string, Connection *types.Connection) error {
 	user, err := s.GetUser(Email)
+	destUser, err := s.GetUser(Connection.DestinationUser)
 
 	// Check if connection format is valid
 	if !types.ValidateConnection(Connection) {
@@ -109,6 +110,16 @@ func (s *MemoryStorage) InsertConnection(Email string, Connection *types.Connect
 
 	// Add connection to list for the user
 	user.Connections = append(user.Connections, *Connection)
+
+	// Create mirror connection
+	var mirrorConn *types.Connection = &types.Connection{
+		SourceUser: Connection.DestinationUser,
+		DestinationUser: Connection.SourceUser,
+		Weight: Connection.Weight,
+	}
+
+	// Add mirror connection to dest user
+	destUser.Connections = append(destUser.Connections, *mirrorConn)
 
 	return err
 
