@@ -80,6 +80,12 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 
 - **Example:** http://localhost:3000/users/{email}?name=true&email=true
 
+#### Getting Images
+- Images are accessible via link at http://{address}:{port}/static/images/{file_name}
+- **File Naming Conventions:** {email} is the user's email and {ext} is the file type extension 
+  - Profile Photos: {email}_profile.{ext}
+    - File Types: png, jpeg 
+
 
 ## Create Information:
 
@@ -155,7 +161,7 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 **Image Data Format PUT Body**:
 - Valid Image Formats: png, jpeg
 
-**Example:**
+- **Example:**
   ```json 
   {
     "image": "image/png,iVBORw0KGgoAAAANSUhEUgAAB9..."
