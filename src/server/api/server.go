@@ -29,6 +29,7 @@ func (s *Server) Start() error {
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
+	// API Endpoints
 	router.HandleFunc("/", homePage)
 	router.HandleFunc("/users/{email}", s.handleGetUserByEmail).Methods("GET", "OPTIONS")
 	router.HandleFunc("/users", s.handleCreateUser).Methods("POST", "OPTIONS")
@@ -38,6 +39,9 @@ func (s *Server) Start() error {
 	router.HandleFunc("/users/{email}/connections", s.handleCreateUserConnection).Methods("POST", "OPTIONS")
 	router.HandleFunc("/users/{email}/connections", s.handleDeleteUserConnection).Methods("DELETE", "OPTIONS")
 
-	// Serve server
+	// Static routes
+	router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("data/images"))))
+
+	// Serve web server
 	return http.ListenAndServe(s.listenAddr, handlers.CORS(originsOk, headersOk, methodsOk)(router))
 }
