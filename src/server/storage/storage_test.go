@@ -161,3 +161,52 @@ func TestInsertConnection(t *testing.T) {
 	assert.Equal(t, jimToMarthaConn.DestinationUser, userJim.Connections[0].DestinationUser)
 	assert.Equal(t, mirrorConn.DestinationUser, userMartha.Connections[0].DestinationUser)
 }
+
+func TestDeleteConnection(t *testing.T) {
+	// Create storage
+	s:= NewMemoryStorage()
+
+	// Create test users
+	var userJim *types.User = &types.User{
+		Name: "Jim",
+		Email: "jim@test.com",
+		ProfilePic: "/test/jim.png",
+	}
+
+	var userMartha *types.User = &types.User{
+		Name: "Martha",
+		Email: "martha@test.com",
+		ProfilePic: "/test/martha.png",
+	}
+
+	// Create connection object
+	var jimToMarthaConn *types.Connection = &types.Connection{
+		SourceUser: "jim@test.com",
+		DestinationUser: "martha@test.com",
+		Weight: 0,
+	}
+
+	var mirrorConn *types.Connection = &types.Connection{
+		SourceUser: "martha@test.com",
+		DestinationUser: "jim@test.com",
+		Weight: 0,
+	}
+
+	// Insert users to db
+	s.InsertUser(userJim)
+	s.InsertUser(userMartha)
+
+	// Insert connection
+	s.InsertConnection(userJim.Email, jimToMarthaConn)
+
+	// Check connection was added to Jim and Martha user object
+	assert.Equal(t, jimToMarthaConn.DestinationUser, userJim.Connections[0].DestinationUser)
+	assert.Equal(t, mirrorConn.DestinationUser, userMartha.Connections[0].DestinationUser)
+
+	// Delete the connection for Jim
+	s.DeleteConnection(userJim.Email, jimToMarthaConn.SourceUser, jimToMarthaConn.DestinationUser)
+
+	// Check the connection was deleted for jim and the change was mirrored for Martha
+	assert.Equal(t, 0, len(userJim.Connections))
+	assert.Equal(t, 0, len(userMartha.Connections))
+}
