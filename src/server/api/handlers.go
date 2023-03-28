@@ -19,10 +19,12 @@ import (
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the HomePage! from %v\n", r.RemoteAddr)
+	LogTime()
 	fmt.Println("Endpoint Hit: homePage")
 }
 
 func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
+	LogTime()
 	fmt.Printf("Endpoint Hit: handleGetUserByEmail from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
@@ -30,7 +32,11 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	// Get id from URL path
 	email := vars["email"]
 
+	// Get user from db
 	user, err := s.store.GetUser(email)
+
+	// Create new user to save requested info
+	var newUser types.User
 
 	if err != nil {
 
@@ -45,11 +51,39 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// No error encode user data
-	json.NewEncoder(w).Encode(user)
+	nameParam := r.URL.Query().Get("name")
+	if nameParam == "true" {
+		newUser.Name = user.Name
+	}
+
+	emailParam := r.URL.Query().Get("email")
+	if emailParam == "true" {
+		newUser.Email = user.Email
+	}
+
+	profilePicParam := r.URL.Query().Get("profilepic")
+	if profilePicParam == "true" {
+		newUser.ProfilePic = user.ProfilePic
+	}
+
+	connectionParam := r.URL.Query().Get("connections")
+	if connectionParam == "true" {
+		newUser.Connections = user.Connections
+	}
+
+	// No parameters given return full user struct with all data
+	if nameParam == "" && emailParam == "" && profilePicParam == "" &&
+		connectionParam == "" {
+			json.NewEncoder(w).Encode(user)
+			return
+		}
+
+	// Return partial data based on params
+	json.NewEncoder(w).Encode(newUser)
 }
 
 func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
+	LogTime()
 	fmt.Printf("Endpoint Hit: handleCreateUser from %v\n", r.RemoteAddr)
 	// Get the body of our POST request
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -74,6 +108,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	LogTime()
 	fmt.Printf("Endpoint Hit: handleDeleteUser from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
@@ -97,6 +132,7 @@ func (s *Server) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
+	LogTime()
 	fmt.Printf("Endpoint Hit: handleUpdateUser from %v\n", r.RemoteAddr)
 
 	// Retrieve mux variables from URL
@@ -107,7 +143,6 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Parameters from URL
 	queriedUpdateName := r.URL.Query().Get("name")
-
 
 	err := s.store.UpdateUser(email, queriedUpdateName, "")
 
@@ -125,6 +160,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request) {
+	LogTime()
 	fmt.Printf("Endpoint Hit: handleSetUserProfilePicture from %v\n", r.RemoteAddr)
 
 	// Retrieve mux variables from URL
@@ -158,7 +194,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	// Parse data string to retrieve image data
 	image, _ := json.Marshal(fieldMapForBody["image"])
 	imageIndex := strings.Index(string(image), ",")
-	rawImage := string(image)[imageIndex+1:len(string(image)) - 1] // Remove the trailing "
+	rawImage := string(image)[imageIndex+1 : len(string(image))-1] // Remove the trailing "
 
 	// Check if data string is properly formated
 	// Size 7 is for "image/x" with x being a 1 character file extension
@@ -176,7 +212,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	// Add path to store in file system; default if src/server
 	// Next append image storage directory
 	path, _ := os.Getwd()
-	imagePath := path + "/data/images/" 
+	imagePath := path + "/data/images/"
 
 	// Create base image name
 	imageName := user.Email + "_profile."
@@ -190,7 +226,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 
 		// Add extension to name
 		imageName = imageName + "png"
-		finalImgPath := imagePath + imageName;
+		finalImgPath := imagePath + imageName
 
 		// Check if user has existing profile picture
 		if user.ProfilePic != "" {
@@ -225,14 +261,14 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 
 		// Print successful update to console
 		fmt.Printf("Profile picture update for %v || Type: PNG\n", user.Email)
-		
+
 	case "image/jpeg":
 		// decode jpeg
 		jpegI, err := jpeg.Decode(res)
 
 		// Add extension to name
 		imageName = imageName + "jpeg"
-		finalImgPath := imagePath + imageName;
+		finalImgPath := imagePath + imageName
 
 		// Check if user has existing profile picture
 		if user.ProfilePic != "" {
@@ -267,7 +303,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 
 		// Print successful update to console
 		fmt.Printf("Profile picture update for %v || Type: JPEG\n", user.Email)
-	
+
 	default:
 		err := errors.New("invalid image format")
 		ApiHttpError(w, err, http.StatusUnprocessableEntity, "Invalid image format!")
@@ -275,6 +311,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Request) {
+	LogTime()
 	fmt.Printf("Endpoint Hit: handleCreateUserConnection from %v\n", r.RemoteAddr)
 
 	// Retrieve mux variables from URL
@@ -330,7 +367,7 @@ func (s *Server) handleCreateUserConnection(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Request) {
-
+	LogTime()
 	fmt.Printf("Endpoint Hit: handleDeleteUserConnection from %v\n", r.RemoteAddr)
 	// Retrieve mux variables from URL
 	vars := mux.Vars(r)
