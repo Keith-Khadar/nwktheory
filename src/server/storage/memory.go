@@ -127,6 +127,7 @@ func (s *MemoryStorage) InsertConnection(Email string, Connection *types.Connect
 
 func (s *MemoryStorage) DeleteConnection(UserEmail string, SourceUser string, DestinationUser string) error {
 	user, err := s.GetUser(UserEmail)
+	destUser, err := s.GetUser(DestinationUser)
 
 	if err != nil {
 		return err
@@ -134,8 +135,9 @@ func (s *MemoryStorage) DeleteConnection(UserEmail string, SourceUser string, De
 
 	// Create new array for connections
 	newConnections := []types.Connection {}
+	newDestConnections := []types.Connection {}
 
-	// Add all connections except the one that is to be deleted
+	// Add all connections except the one that is to be deleted 
 	for _, connection := range user.Connections {
 		if connection.SourceUser == SourceUser && connection.DestinationUser == DestinationUser {
 			continue
@@ -143,7 +145,17 @@ func (s *MemoryStorage) DeleteConnection(UserEmail string, SourceUser string, De
 		newConnections = append(newConnections, connection)
 	}
 
+	// Mirror change in the destination user's connections
+	// Add all connections except the one that is to be deleted
+	for _, connection := range destUser.Connections {
+		if connection.DestinationUser == SourceUser && connection.SourceUser == DestinationUser {
+			continue
+		}
+		newDestConnections = append(newConnections, connection)
+	}
+
 	user.Connections = newConnections
+	destUser.Connections = newDestConnections
 
 	return err
 }
