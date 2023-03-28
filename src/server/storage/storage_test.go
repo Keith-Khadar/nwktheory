@@ -158,6 +158,6 @@ func TestInsertConnection(t *testing.T) {
 	s.InsertConnection(userJim.Email, jimToMarthaConn)
 
 	// Check connection was added to Jim's user object
-	assert.EqualValues(t, jimToMarthaConn.DestinationUser, userJim.Connections[0].DestinationUser)
+	assert.Equal(t, jimToMarthaConn.DestinationUser, userJim.Connections[0].DestinationUser)
 	assert.Equal(t, mirrorConn.DestinationUser, userMartha.Connections[0].DestinationUser)
 }
