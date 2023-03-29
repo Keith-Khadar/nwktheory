@@ -1,4 +1,5 @@
-<button (click)="logout()" class="logout-button">
-  <ion-icon name="log-out-outline"></ion-icon>  
-  <span>Log out</span>
-</button>
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button size="small" (click)="logout()" class="logout-button" color="light">
+  <ion-icon name="log-out-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
