@@ -1,11 +1,15 @@
-<app-graph></app-graph>
 <ion-header>
   <ion-toolbar>
-    <ion-title>NWK Theory</ion-title>
+    <ion-title>Your Network</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content class="ion-padding">
-  <ion-button id="open-modal" expand="block">Add Connection +</ion-button>
+  <ion-fab slot="fixed" horizontal="end" vertical="bottom" class="ion-padding">
+    <ion-fab-button id="open-modal" expand="block">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
   <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
     <ng-template>
       <ion-header>
@@ -27,4 +31,5 @@
       </ion-content>
     </ng-template>
   </ion-modal>
+  <app-graph></app-graph>
 </ion-content>
