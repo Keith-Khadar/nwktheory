@@ -29,7 +29,7 @@ export class UserProfileComponent implements OnInit{
       this.userEmail = user!.email!
       this.userName = user!.name!
       console.log(this.userEmail);
-      this.photoService.setPhoto(this.url + "static/images/" + this.userEmail + "_profile.jpeg")
+      this.photoService.setPhoto(this.url + "static/images/" + this.userEmail + "_profile.png")
     })
   }
 
