@@ -196,6 +196,11 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	imageIndex := strings.Index(string(image), ",")
 	rawImage := string(image)[imageIndex+1 : len(string(image))-1] // Remove the trailing "
 
+	// Determine image type
+	dataTypeStartIndex := strings.Index(string(image), ":")
+	dataTypeEndIndex := strings.Index(string(image), ";")
+	imageType := string(image[dataTypeStartIndex + 1:dataTypeEndIndex])
+
 	// Check if data string is properly formated
 	// Size 7 is for "image/x" with x being a 1 character file extension
 	if imageIndex < 7 {
@@ -219,7 +224,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 
 	// Decode the images based on format
 	// Starts at index 1 to remove starting "
-	switch strings.TrimPrefix(string(image[1:imageIndex]), ";base64") {
+	switch imageType {
 	case "image/png":
 		// decode png
 		pngI, err := png.Decode(res)
