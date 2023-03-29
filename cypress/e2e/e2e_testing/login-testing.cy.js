@@ -59,17 +59,20 @@ describe('Testing account login and retrieval', () => {
     cy.get('#tab-button-Profile').click()
     cy.get('ion-label').contains(email).should('be.visible')
     cy.wait(500)
-
+  
 
     // Check that the other tabs work
+
+    // Home
     cy.get('#tab-button-Home').click()
     cy.wait(500)
     cy.get('#open-modal').click()
     cy.wait(1000)
-    cy.contains('Cancel').click()
+    cy.get('.native-input').type('eric@uf.edu')
+    cy.contains('Confirm').click()
     cy.wait(1000)
 
-
+    // Chat
     cy.get('#tab-button-Chat').click()
     cy.wait(500)
 
