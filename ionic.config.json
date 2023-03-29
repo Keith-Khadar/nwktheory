@@ -1,0 +1,10 @@
+{
+  "defaultProject": "nwktheory",
+  "projects": {
+    "nwktheory": {
+      "name": "nwktheory",
+      "integrations": {},
+      "type": "angular"
+    }
+  }
+}
