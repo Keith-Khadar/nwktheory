@@ -25,7 +25,7 @@ describe('Testing account login and retrieval', () => {
       // Click continue
       cy.contains('Continue').click();
 
-      cy.wait(2000)
+      cy.wait(500)
     })
       cy.url().then(($url) =>{
         if($url.includes('http://localhost:4200')){
@@ -55,22 +55,28 @@ describe('Testing account login and retrieval', () => {
     })
 
     // Check to make sure you are logged in
+    cy.wait(500)
     cy.get('#tab-button-Profile').click()
-    cy.get('app-user-profile li').should('have.length', 2)
-    cy.get('app-user-profile li').eq(0).contains(`${email}`)
+    cy.get('ion-label').contains(email).should('be.visible')
     cy.wait(500)
 
 
     // Check that the other tabs work
     cy.get('#tab-button-Home').click()
     cy.wait(500)
+    cy.get('#open-modal').click()
+    cy.wait(1000)
+    cy.contains('Cancel').click()
+    cy.wait(1000)
+
+
     cy.get('#tab-button-Chat').click()
     cy.wait(500)
 
     // Log out
     cy.get('#tab-button-Profile').click()
     cy.wait(500)
-    cy.get('.logout').click()
+    cy.get('.logout-button').click()
     cy.wait(500)
 
   })
