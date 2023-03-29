@@ -1,5 +1,29 @@
-user-profile works!
-<ul *ngIf="auth.user$ | async as user">
-    <li>{{ user.name }}</li>
-    <li>{{ user.email }}</li>
-</ul>`
+<ion-content class="ion-padding">
+    <div class="glow-effect" *ngIf="auth.user$ | async as user">
+        <ion-card class="profile-card" id="profile-card">
+            <div class="profile-image-container">
+                <ion-img class="profile-image" [src]="photoService.photo.webviewPath"></ion-img>
+                <ion-fab vertical="top" horizontal="left" slot="fixed">
+                    <ion-fab-button size="small" (click)="addPhotoToGallery()" style="margin-top: 100%;">
+                    <ion-icon name="camera" style="color: aliceblue; margin-right: 0;"></ion-icon>
+                    </ion-fab-button>
+                </ion-fab>
+            </div>
+    
+            <ion-card-header>
+            <ion-card-title>{{ user.name }}</ion-card-title>
+            </ion-card-header>
+    
+            <ion-card-content>
+            <ion-item>
+                <ion-icon name="mail-outline"></ion-icon>
+                <ion-label>{{ user.email }}</ion-label>
+            </ion-item>
+            </ion-card-content>
+        </ion-card>
+        <svg class="glow-container">
+            <rect pathLength="100" stroke-linecap="round" class="glow-line"></rect>
+            <rect pathLength="100" stroke-linecap="round" class="glow-blur"></rect>
+        </svg>
+    </div>
+</ion-content>

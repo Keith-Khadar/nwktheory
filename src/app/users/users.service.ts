@@ -20,7 +20,8 @@ const httpOptions = {
 
 @Injectable()
 export class UsersService {
-  usersUrl = "http://10.136.205.121:3000/users"; // URL to web api
+  public url = "http://10.136.104.234:3000";
+  usersUrl = this.url + "/users"; // URL to web api
   
   private handleError: HandleError;
 
