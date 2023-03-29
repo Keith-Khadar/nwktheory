@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 
 import { HomePageRoutingModule } from './home-page-routing.module';
 
+// Import the Pan Zoom Module
+import { NgxPanZoomModule } from 'ngx-panzoom';
 
 
 @NgModule({
@@ -17,7 +19,8 @@ import { HomePageRoutingModule } from './home-page-routing.module';
     CommonModule,
     FormsModule,
     HomePageRoutingModule,
-    UsersModule
+    UsersModule,
+    NgxPanZoomModule
   ]
 })
 export class HomePageModule { }

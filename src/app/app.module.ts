@@ -23,7 +23,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpErrorHandler } from './http-error-handler.service';
 
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +45,7 @@ import { HttpErrorHandler } from './http-error-handler.service';
     
     IonicModule.forRoot(),
     AppRoutingModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
   HttpErrorHandler, MessageService],
