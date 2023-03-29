@@ -12,19 +12,20 @@ describe('Testing account login and retrieval', () => {
 
     cy.origin('https://dev-uw446xx8ru35160g.us.auth0.com', {args: {email, password} }, ({email, password}) => {
 
-      // Finds the sign up button and clicks it
-      cy.get('.c34934055.c2dd6083e').eq(2).click()
+      // Finds the sign up button and click it
+      cy.get('a').contains('Sign up').click();
       
       // Within the sign up page enter a email and password
 
       // Email 
-      cy.get('.input.cdb43277e.cc737af35').type(`${email}`)
+      cy.get('#email').type(`${email}`)
       // Password
-      cy.get('.input.cdb43277e.c94bb61d1').type(`${password}`)
+      cy.get('#password').type(`${password}`)
 
       // Click continue
-      cy.get('.c994ae14c.c2fd8f218.ca2dc35c7.c0c7f649b.c2b7b15aa').click()
+      cy.contains('Continue').click();
 
+      cy.wait(2000)
     })
       cy.url().then(($url) =>{
         if($url.includes('http://localhost:4200')){
@@ -44,13 +45,13 @@ describe('Testing account login and retrieval', () => {
     cy.origin('https://dev-uw446xx8ru35160g.us.auth0.com', {args: {email, password} }, ({email, password}) => {
       
       // Within the sign up page enter a email and password
-      // Email 
-      cy.get('.input.cdb43277e.c07239cfd').type(`${email}`)
-      // Password
-      cy.get('.input.cdb43277e.c94bb61d1').type(`${password}`)
-
-      // Click continue
-      cy.get('.c994ae14c.c2fd8f218.ca2dc35c7.c0c7f649b.cfbf81233').click()
+       // Email 
+       cy.get('#username').type(`${email}`)
+       // Password
+       cy.get('#password').type(`${password}`)
+ 
+       // Click continue
+       cy.contains('Continue').click();
     })
 
     // Check to make sure you are logged in
