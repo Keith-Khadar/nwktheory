@@ -23,7 +23,7 @@ describe('Testing account login and retrieval', () => {
       cy.get('#password').type(`${password}`)
 
       // Click continue
-      cy.get('button').contains('Continue').click()
+      cy.contains('Continue').click();
 
       cy.wait(2000)
     })
@@ -46,13 +46,12 @@ describe('Testing account login and retrieval', () => {
       
       // Within the sign up page enter a email and password
        // Email 
-       cy.get('#email').type(`${email}`)
        cy.get('#username').type(`${email}`)
        // Password
        cy.get('#password').type(`${password}`)
  
        // Click continue
-       cy.get('button').contains('Continue').click()
+       cy.contains('Continue').click();
     })
 
     // Check to make sure you are logged in
