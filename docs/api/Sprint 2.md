@@ -72,10 +72,19 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 
 #### GET /users/{email}
 - **What it does:** Return one user and their data identified by email
-- **Note:** Requested user should exist in the database
+- **Note:** Requested user should exist in the database. When using paramters only the requested parameters will be returned. If no parameters are specified all the user's data is returned.
+- **Parameters:** name, profilepic, email, connections
 - **Responses:**
   - 404 Not Found: Returned when the requested user does not exist.
   - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
+
+- **Example:** http://localhost:3000/users/{email}?name=true&email=true
+
+#### Getting Images
+- Images are accessible via link at http://{address}:{port}/static/images/{file_name}
+- **File Naming Conventions:** {email} is the user's email and {ext} is the file type extension 
+  - Profile Photos: {email}_profile.{ext}
+    - File Types: png, jpeg 
 
 
 ## Create Information:
@@ -128,7 +137,7 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 ## Modify Information:
 
 #### PUT /users/{email}
-- - **What it does:** Update a user's information, identified by their email, and all their related information
+- **What it does:** Update a user's information, identified by their email, and all their related information
 - **Requirements:**
   - {email} in the URL path should exist in the database
   - Name in the URL path as a query parameter (additional user sections will be added to allow more modification to a user's profile)
@@ -136,3 +145,26 @@ Path variables will be displayed as {variable} in a path and should be replaced 
 - **Responses:**
   - 404 Not Found: Returned when the requested user does not exist.
   - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
+
+
+#### PUT /users/{email}/image
+- **What it does:** Update a user's profile picture, identified by their email.
+- **Requirements:**
+  - {email} in the URL path should exist in the database
+  - Follow the image data format for the body of the PUT request, see below.
+  - Image is encoded in base64.
+- **Note:** Uploading a profile picture will overwrite the old profile picture automatically.
+- **Responses:**
+  - 422 Unprocessable Entity: Returned when the data provided does match or can't be processed as a valid image format. (PNG, JPEG)
+  - 500 Internal Server Error: Returned when server encounters file creation errors. This is related to interaction with the OS.
+
+**Image Data Format PUT Body**:
+- Valid Image Formats: png, jpeg
+
+- **Example:**
+  ```json 
+  {
+    "image": "image/png,iVBORw0KGgoAAAANSUhEUgAAB9..."
+  }
+
+  ```
