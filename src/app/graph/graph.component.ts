@@ -3,8 +3,8 @@ import * as Highcharts from 'highcharts';
 import HighchartsNetworkGraph from 'highcharts/modules/networkgraph';
 import { AuthService } from '@auth0/auth0-angular';
 import { DOCUMENT } from '@angular/common';
+import { PanZoomConfig, PanZoomAPI, PanZoomModel, PanZoomConfigOptions } from 'ngx-panzoom';
 
-import { fakeData } from './fake-data';
 
 type Connection = {
   from: string,
@@ -32,6 +32,9 @@ export class GraphComponent implements AfterViewInit {
   userName: string = ""
   Connections: Array<Connection> = []
 
+  panZoomConfig: PanZoomConfig = new PanZoomConfig();
+
+
   public ngAfterViewInit(): void {
     this.auth.user$.subscribe((user) => {
       this.userEmail = user!.email!
@@ -56,7 +59,7 @@ export class GraphComponent implements AfterViewInit {
   private createChartNWK(): void {
     const chart = Highcharts.chart('chart-nwk', {
       title: {
-        text: 'Your Connections'
+        text: ''
       },
       chart: {
           type: 'networkgraph',
@@ -97,11 +100,5 @@ export class GraphComponent implements AfterViewInit {
         }
       ]
     } as Highcharts.Options);
-
-    /*
-    setInterval(() => {
-      chart.series[0].points[0].update(this.getRandomNumber(0, 100));
-    }, 1000);
-    */
   }
 }
