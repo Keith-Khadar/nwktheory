@@ -1,11 +1,4 @@
 .gradient{
-    --ion-background-color: conic-gradient(
-        at 125% 50%,
-        #3a47d5,
-        #00d2ff,
-        #d9e7ff,
-        #00d2ff,
-        #3a47d5
-      );
+    --ion-background-color: conic-gradient(from 90deg at 50% 125%, #20b2aa, #135da5, #0d0895, #4b0082, #4b0082, #0d0895, #135da5, #20b2aa)
 
 }
