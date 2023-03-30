@@ -12,9 +12,8 @@ type Connection = {
 }
 
 type Node = {
-  DestinationUser: string,
-  SourceUser: string,
-  Weight: number,
+  from: string,
+  to: string,
 }
 
 HighchartsNetworkGraph(Highcharts);
@@ -45,8 +44,8 @@ export class GraphComponent implements AfterViewInit {
       .then((data) => {
         data.Connections.forEach((connection: Node) => {
           this.Connections.push({
-            from: connection.DestinationUser,
-            to: connection.SourceUser,
+            from: connection.from,
+            to: connection.to,
           })
         })
       })

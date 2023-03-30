@@ -33,15 +33,14 @@ export class HomePageComponent {
   }
 
   async confirm() {
-    const res = await fetch(`http://localhost:3000/users/${this.userEmail}/connections`, {
+    const res = await fetch(`http://nwk.tehe.xyz:3000/users/${this.userEmail}/connections`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "SourceUser": this.userEmail,
-        "DestinationUser": this.destinationEmail,
-        "Weight": "0.0"
+        "from": this.userEmail,
+        "to": this.destinationEmail
       })
     })
     if(res.status === 200) {
