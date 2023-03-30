@@ -101,6 +101,10 @@
           "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+            "sslKey": "/home/go-user/certs/privkey.pem",
+            "sslCert": "/home/go-user/certs/cert.pem"
+          },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
