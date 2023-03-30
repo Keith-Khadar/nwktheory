@@ -21,7 +21,7 @@ export class UserProfileComponent implements OnInit{
   userEmail: string = '';
   userName: string = '';
   
-  url = 'http://10.136.104.234:3000/';
+  url = 'http://nwk.tehe.xyz:3000/';
 
   ngOnInit(): void {
     console.log("t");

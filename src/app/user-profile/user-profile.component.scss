@@ -1,5 +1,6 @@
 .profile-card {
     max-width: 600px;
+    height: 100%;
     margin: auto;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -37,6 +38,7 @@
 // Glow Effects
 .glow-effect{
   position: relative;
+  height: 70vh;
 }
 
 .glow-container{
