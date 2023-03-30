@@ -141,13 +141,11 @@ func TestInsertConnection(t *testing.T) {
 	var jimToMarthaConn *types.Connection = &types.Connection{
 		SourceUser: "jim@test.com",
 		DestinationUser: "martha@test.com",
-		Weight: 0,
 	}
 
 	var mirrorConn *types.Connection = &types.Connection{
 		SourceUser: "martha@test.com",
 		DestinationUser: "jim@test.com",
-		Weight: 0,
 	}
 
 	// Insert users to db
@@ -183,13 +181,11 @@ func TestDeleteConnection(t *testing.T) {
 	var jimToMarthaConn *types.Connection = &types.Connection{
 		SourceUser: "jim@test.com",
 		DestinationUser: "martha@test.com",
-		Weight: 0,
 	}
 
 	var mirrorConn *types.Connection = &types.Connection{
 		SourceUser: "martha@test.com",
 		DestinationUser: "jim@test.com",
-		Weight: 0,
 	}
 
 	// Insert users to db
