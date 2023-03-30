@@ -30,8 +30,8 @@ func (s *Server) Start() error {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// Get cert and key path
-	certPath := "/home/alex/certs/cert.pem"
-	keyPath := "/home/alex/certs/privkey.pem"
+	certPath := "/home/go-user/certs/cert.pem"
+	keyPath := "/home/go-user/certs/privkey.pem"
 
 	// API Endpoints
 	router.HandleFunc("/", homePage)
