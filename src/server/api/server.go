@@ -29,6 +29,10 @@ func (s *Server) Start() error {
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
+	// Get cert and key path
+	certPath := "/home/alex/certs/cert.pem"
+	keyPath := "/home/alex/certs/privkey.pem"
+
 	// API Endpoints
 	router.HandleFunc("/", homePage)
 	router.HandleFunc("/users/{email}", s.handleGetUserByEmail).Methods("GET", "OPTIONS")
@@ -43,5 +47,5 @@ func (s *Server) Start() error {
 	router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("data/images"))))
 
 	// Serve web server
-	return http.ListenAndServe(s.listenAddr, handlers.CORS(originsOk, headersOk, methodsOk)(router))
+	return http.ListenAndServeTLS(s.listenAddr, certPath, keyPath, handlers.CORS(originsOk, headersOk, methodsOk)(router))
 }
