@@ -33,7 +33,7 @@ export class UserProfileComponent implements OnInit{
 
   imageExt: string = '';
   
-  url = 'http://nwk.tehe.xyz:3000/';
+  url = 'https://nwk.tehe.xyz:3000/';
 
 
   ngOnInit(): void {

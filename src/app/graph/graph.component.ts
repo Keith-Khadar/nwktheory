@@ -39,7 +39,7 @@ export class GraphComponent implements AfterViewInit {
       this.userEmail = user!.email!
       this.userName = user!.name!
 
-      fetch(`http://nwk.tehe.xyz:3000/users/${this.userEmail}`)
+      fetch(`https://nwk.tehe.xyz:3000/users/${this.userEmail}`)
       .then((res) => res.json())
       .then((data) => {
         data.Connections.forEach((connection: Node) => {

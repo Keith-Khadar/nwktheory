@@ -33,7 +33,7 @@ export class HomePageComponent {
   }
 
   async confirm() {
-    const res = await fetch(`http://nwk.tehe.xyz:3000/users/${this.userEmail}/connections`, {
+    const res = await fetch(`https://nwk.tehe.xyz:3000/users/${this.userEmail}/connections`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
