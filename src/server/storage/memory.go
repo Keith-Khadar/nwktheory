@@ -115,7 +115,6 @@ func (s *MemoryStorage) InsertConnection(Email string, Connection *types.Connect
 	var mirrorConn *types.Connection = &types.Connection{
 		SourceUser: Connection.DestinationUser,
 		DestinationUser: Connection.SourceUser,
-		Weight: Connection.Weight,
 	}
 
 	// Add mirror connection to dest user
