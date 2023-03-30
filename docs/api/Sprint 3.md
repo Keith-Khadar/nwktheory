@@ -4,33 +4,41 @@
 
 ## What we have done:
   - ### Frontend:
-    - Added functionality to send http requests to the backend and receive responses
-    - Added automatic profile creation. If the user signs in using Auth0 for the first time we will create a profile for them on our database, otherwise we will get their data from the database
-    - Added an undirected graph that will be used for diplaying the connections between users
+    - Added a skeleton for the chat page
+    - Added zoom and panning for highcharts (the library used to display your connections)
+    - Added functionality for adding connections through the frontend.
+    - Added a logo and changed the theme of the Auth0 Login page.
+    - Created a profile page that shows your profile picture, username, and email. There is some added HTML and CSS to format it nicely.
+    - Added functionality to take and upload pictures using any device
+    - Added functionality to send images to the backend and retrieve images. 
   
   - ### Backend: 
-    - Added functionality for users to add and delete their connections
-    - Added error checking to handle invalid connections requesting to be added
-    - Added functionality to allow users to modify their profile information (currently only the name is modifiable but will add additioanl demographic information that users can modify)
-    - Added CORS policy to allow remote origin requests between clients and the server
+    - Added functionality to upload images to the backend via a PUT request.
+    - Added file server for serving uploaded images to the backend
+    - Added compatability with PNG and JPEG image formats
+    - Added paramater requests for GET users request allowing for partial data requests. 
+    - Added more options for the update user request allowing for name, email, and profile picture path updates.
 
 # Frontend Unit Tests
-   - Chat page: This displays the chat page (this page is empty for now, but we will add functionality for chatting next sprint) 
-   - Graph: This displays the graph that we are generating from High Charts
-   - Home Page: This displays everything on the home page (the home page includes the graph)
-   - Profile Page: This displays the profile page ( Nothing is shown here at the moment because this data is collected of Auth0 when the user is logged in)
+   - Chat page: This displays the chat page. This now shows the skeleton of what the chat page will look like (this will be exapnded upon next sprint). 
+   - Graph: This displays the graph that we are generating from High Charts with the data coming from the backend.
+   - Home Page: This displays everything on the home page (the home page includes the graph). Also shows the button to add connections aswell as the model that shows up when you click this button.
+   - Profile Page: This displays the profile page ( Nothing is shown here at because this data is collected of Auth0 when the user is logged in)
    - Tabs: This displays the tabs that will be shown at the bottom of the app
+   - User-profile: This displays the user's profile card (nothing is shown here because this data is collected from the backend)
 ## Frontend Cypress Test
-   This is an E2E test that goes through the process of signing up for an account and logging into an account through Auth0. The first test is for signing up. Cypress will go through the sign-up process and if an account already exists on Auth0 it will stop there, otherwise it will confirm through the profile page that it is signed in properly. Similarly, for the log in process it will log in check the information shown in the profile page, confirm that the other pages work, and then log out.
+   This is an E2E test that goes through the process of signing up for an account and logging into an account through Auth0. The test goes through the process of signing up for an account first. If there is already an account, the test will end, otherwise it will display the home page then end. The second E2E test goes through the process of logging in. It will log in through Auth0 then check that all the tabs work. Then it will add a connection. Lastly it will log out.
 
 # Backend Unit Tests
 ## Storage Tests
-  - TestGetUser: checks that the GetUser() function properly retrieves the user from the storage implementations.
-  - TestInsertUser: checks that the InsertUser() function properly inserts a user into the storage implementations.
-  - TestDeleteUser: checks that the DeleteUser() function properly deletes a user from the storage implementations.
+  - Added test for the expanded update user function
+  - Added a test for deleting user connections for the database
+  - Added a test for creating user connections in the database
 ## Backend Postman Tests
   - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function.
   - Test get second user by email: Test the infomration of retrieved second user is as expected through the GetUserByEmail() function.
+  - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function after a new profile pic is added.
+  - Test get second user by email: Test the infomration of retrieved second user is as expected through the GetUserByEmail() function after a new profile pic is added.
  
 # User Controls
 
