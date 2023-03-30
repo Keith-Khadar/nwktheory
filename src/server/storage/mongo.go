@@ -166,8 +166,8 @@ func (s *MongoStorage) InsertConnection(Email string, connection *types.Connecti
 
 		_, err = coll.UpdateOne(context.TODO(), filter, change)
 
-		fmt.Printf("Inserted connection: [SourceUser: %v, DestinationUser: %v, Weight: %v]\n", connection.SourceUser,
-			connection.DestinationUser, connection.Weight)
+		fmt.Printf("Inserted connection: [SourceUser: %v, DestinationUser: %v]\n", connection.SourceUser,
+			connection.DestinationUser)
 
 		// Returns nill if coll.UpdateOne returns an error from db
 		return err
