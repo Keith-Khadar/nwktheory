@@ -33,6 +33,8 @@ func (s *Server) Start() error {
 	certPath := "/home/go-user/certs/cert.pem"
 	keyPath := "/home/go-user/certs/privkey.pem"
 
+	//Set up chat server
+
 	// API Endpoints
 	router.HandleFunc("/", homePage)
 	router.HandleFunc("/users/{email}", s.handleGetUserByEmail).Methods("GET", "OPTIONS")
