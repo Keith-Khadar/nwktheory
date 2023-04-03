@@ -6,11 +6,21 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+
+	pusher "github.com/pusher/pusher-http-go/v5"
 )
 
 type Server struct {
 	listenAddr string
 	store      storage.Storage
+}
+
+var client = pusher.Client{
+	AppID:   "1578492",
+	Key:     "37edea490ece53aa7ed1",
+	Secret:  "6b8fec13abbfb0175590",
+	Cluster: "mt1",
+	Secure:  true,
 }
 
 func NewServer(listenAddr string, store storage.Storage) *Server {
