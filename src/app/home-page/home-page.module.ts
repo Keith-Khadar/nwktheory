@@ -11,7 +11,6 @@ import { HomePageRoutingModule } from './home-page-routing.module';
 // Import the Pan Zoom Module
 import { NgxPanZoomModule } from 'ngx-panzoom';
 
-
 @NgModule({
   declarations: [HomePageComponent, GraphComponent],
   imports: [

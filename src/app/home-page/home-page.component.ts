@@ -5,6 +5,8 @@ import { DOCUMENT } from '@angular/common';
 import { IonModal } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
 
+import { AccountService } from '../services/account.service';
+
 @Component({
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
@@ -13,20 +15,13 @@ import { OverlayEventDetail } from '@ionic/core/components';
 export class HomePageComponent {
   @ViewChild(IonModal) modal: IonModal = {} as IonModal;
 
-  constructor(@Inject(DOCUMENT) public document: Document,
-  public auth: AuthService) {}
+  constructor(private account: AccountService) {
+    this.account.getUserData().subscribe((userData) => {this.userEmail = userData.Email})
+  }
 
   message = "";
   destinationEmail: string = "";
   userEmail: string = "";
-  userName: string = "";
-
-  ngOnInit(): void {
-    this.auth.user$.subscribe((user) => {
-      this.userEmail = user!.email!
-      this.userName = user!.name!
-    })
-  }
 
   cancel() {
     this.modal.dismiss(null, 'cancel');
