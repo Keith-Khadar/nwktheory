@@ -1,20 +1,12 @@
-import { AfterViewInit, Component, Inject } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import HighchartsNetworkGraph from 'highcharts/modules/networkgraph';
-import { AuthService } from '@auth0/auth0-angular';
-import { DOCUMENT } from '@angular/common';
-import { PanZoomConfig, PanZoomAPI, PanZoomModel, PanZoomConfigOptions } from 'ngx-panzoom';
+import { PanZoomConfig } from 'ngx-panzoom';
 
+// Custom Services
+import { HttpsService } from '../services/https.service';
+import { Connection } from '../services/info';
 
-type Connection = {
-  from: string,
-  to: string,
-}
-
-type Node = {
-  from: string,
-  to: string,
-}
 
 HighchartsNetworkGraph(Highcharts);
 
@@ -24,35 +16,21 @@ HighchartsNetworkGraph(Highcharts);
   styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements AfterViewInit {
-  constructor(@Inject(DOCUMENT) public document: Document,
-  public auth: AuthService) {}
+  constructor(private https: HttpsService) {}
 
-  userEmail: string = ""
-  userName: string = ""
   Connections: Array<Connection> = []
 
   panZoomConfig: PanZoomConfig = new PanZoomConfig();
 
 
   public ngAfterViewInit(): void {
-    this.auth.user$.subscribe((user) => {
-      this.userEmail = user!.email!
-      this.userName = user!.name!
-
-      fetch(`https://nwk.tehe.xyz:3000/users/${this.userEmail}`)
-      .then((res) => res.json())
-      .then((data) => {
-        data.Connections.forEach((connection: Node) => {
-          this.Connections.push({
-            from: connection.from,
-            to: connection.to,
-          })
-        })
-      })
-      .then(() => {
-        this.createChartNWK()
-      })
-    })
+    // Use the custom service to get the user from the database 
+    this.https.getUser(true).subscribe((user) => {
+      // Save the connections gathered from the database into the connections array
+      this.Connections = user.Connections;
+      // Then create the chart
+      this.createChartNWK()
+    });
   }
 
   private createChartNWK(): void {

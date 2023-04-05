@@ -7,6 +7,7 @@ export {backend_url}
 export interface User{
     Name: string,
     Email: string,
+    ProfilePic: string,
     Connections: [];
 }
 export interface ProfilePic{
@@ -21,11 +22,13 @@ export interface Connection{
 export class UserData implements User{
     Name: string;
     Email: string;
+    ProfilePic: string;
     Connections: [];
 
     constructor() {
         this.Name = "";
         this.Email = "";
+        this.ProfilePic = "";
         this.Connections =[];
     }
 }

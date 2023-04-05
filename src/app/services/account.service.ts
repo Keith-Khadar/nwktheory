@@ -8,7 +8,7 @@ import { UserData } from './info';// To get the user data class
 })
 export class AccountService {
 
-  private userData = new UserData();
+  public userData = new UserData();
   // This will emit the data when it is availible (if it is not ready yet)
   private userDataSubject = new Subject<UserData>();
 
@@ -28,7 +28,7 @@ export class AccountService {
 
   public getUserData(): Observable<UserData>{
     // Check if we already have the data from Auth0
-    if(this.userData){
+    if(this.userData.Email != ''){
       // Then if we do convert it to an observable and return it
       return of(this.userData);
     }

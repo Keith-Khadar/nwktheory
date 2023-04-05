@@ -1,4 +1,3 @@
-import { UsersModule } from './../users/users.module';
 import { ChatPageComponent } from './chat-page.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -15,7 +14,6 @@ import { ChatPageRoutingModule } from './chat-page-routing.module';
     CommonModule,
     FormsModule,
     ChatPageRoutingModule,
-    UsersModule
   ]
 })
 export class ChatPageModule { }

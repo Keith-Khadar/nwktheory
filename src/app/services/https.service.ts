@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { AccountService } from './account.service';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -15,21 +15,18 @@ export class HttpsService {
 
   getUser(createUser: boolean): Observable<User>{
     // Create an object to store the response in.
-    let user = new UserData;
+    let userSubject = new Subject<UserData>();
 
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
-      // Save the user data from Auth0, incase the data-base doesnt return a user return this one
-      user = userData;
 
       // Create the URL for the get request
-      const url = backend_url + '/' + userData.Email;
-
+      const url = backend_url + 'users/' + userData.Email;
       // The HTTP get request
       this.http.get<User>(url).subscribe({
         next: (response) => {
           // handle the response
-          user = response;
+          userSubject.next(response);
         },
         error: (error) => {
           // handle error
@@ -37,6 +34,7 @@ export class HttpsService {
             console.log('User not found');
             // Create a user if one is not found
             if(createUser){
+              console.log('Adding user');
               this.addUser();
             }
           } else {
@@ -46,13 +44,13 @@ export class HttpsService {
       });
     })
     // Return the user
-    return of (user);
+    return userSubject.asObservable();
   }
 
   getImage(): Observable<string>{
     // Create a string to store the image url
     let imageUrl = ''
-
+    let imageSubject = new Subject<string>();
     //Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
 
@@ -65,9 +63,12 @@ export class HttpsService {
 
         // Create the url for the static image
         imageUrl = backend_url + 'static/images/' + userData.Email + '_profile' + imageExt;
+
+        // emit the image
+        imageSubject.next(imageUrl);
       });
     })
-    return of (imageUrl);
+    return imageSubject.asObservable();
   }
 
 
@@ -77,36 +78,43 @@ export class HttpsService {
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the post request
-      const url = backend_url + '/users';
+      const url = backend_url + 'users';
 
+      console.log(userData);
       // The HTTP post request
       this.http.post(url,userData).subscribe({
         error:(error) =>{
-          console.log('An error occurred:', error.error.message);
+          console.log('An error occurred when adding a user:', error.error.message);
         }
       });
     })
   }
 
-  addConnection(destinationEmail: string){
+  addConnection(destinationEmail: string): Observable<boolean>{
+    // Create a subject to return if this was successful or not
+    let responseSubject = new Subject<boolean>();
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the post request
-      const url = backend_url + '/users/' + userData.Email + '/connections';
+      const url = backend_url + 'users/' + userData.Email + '/connections';
       
       // Create the connection
       let newConnection = new ConnectionData();
       newConnection.from = userData.Email;
       newConnection.to = destinationEmail;
 
-
       // The HTTP post request
       this.http.post(url, newConnection).subscribe({
+        next:() =>{
+          return responseSubject.next(true);
+        },
         error:(error) =>{
           console.log('An error occurred:', error.error.message);
+          return responseSubject.next(false);
         }
       });
     })
+    return responseSubject.asObservable();
   }
 
   // Delete Information //
@@ -115,7 +123,7 @@ export class HttpsService {
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the delete request
-      const url = backend_url + '/users/' + userData.Email;
+      const url = backend_url + 'users/' + userData.Email;
 
       // The HTTP delete request
       this.http.delete(url).subscribe({
@@ -130,7 +138,7 @@ export class HttpsService {
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the delete request
-      const url = backend_url + '/users/' + userData.Email + '/connections';
+      const url = backend_url + 'users/' + userData.Email + '/connections';
       
       // Create the connection param
       let params = new HttpParams();
@@ -152,14 +160,14 @@ export class HttpsService {
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the put request
-      const url = backend_url + '/users/' + userData.Email;
+      const url = backend_url + 'users/' + userData.Email;
       
       // Create the params
       let params = new HttpParams();
       params = params.append('name', name);
 
       // The HTTP put request
-      this.http.delete(url, {params: params}).subscribe({
+      this.http.put(url, {params: params}).subscribe({
         error:(error) =>{
           console.log('An error occurred:', error.error.message);
         }
@@ -171,14 +179,14 @@ export class HttpsService {
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the put request
-      const url = backend_url + '/users/' + userData.Email + '/image';
+      const url = backend_url + 'users/' + userData.Email + '/image';
       
       let updatedImage = new ProfilePicData();
       updatedImage.ProfilePic = base64Data;
 
       // The HTTP put request
-      this.http.put(url, {body: updatedImage}).subscribe({
-        error:(error) =>{
+      this.http.put(url, updatedImage).subscribe({
+        error:(error) =>{ 
           console.log('An error occurred:', error.error.message);
         }
       });

@@ -1,11 +1,10 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
-import { DOCUMENT } from '@angular/common';
+import { Component, ViewChild } from '@angular/core';
 
 import { IonModal } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
 
-import { AccountService } from '../services/account.service';
+// Custom Services
+import { HttpsService } from '../services/https.service';
 
 @Component({
   selector: 'app-home-page',
@@ -15,36 +14,31 @@ import { AccountService } from '../services/account.service';
 export class HomePageComponent {
   @ViewChild(IonModal) modal: IonModal = {} as IonModal;
 
-  constructor(private account: AccountService) {
-    this.account.getUserData().subscribe((userData) => {this.userEmail = userData.Email})
-  }
+  constructor(private https: HttpsService) { }
 
   message = "";
-  destinationEmail: string = "";
-  userEmail: string = "";
 
+  // This is gathered from the html form
+  destinationEmail: string = "";
+
+  // Model functions //
   cancel() {
     this.modal.dismiss(null, 'cancel');
   }
 
   async confirm() {
-    const res = await fetch(`https://nwk.tehe.xyz:3000/users/${this.userEmail}/connections`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "from": this.userEmail,
-        "to": this.destinationEmail
-      })
+    // Send an http post request to add a connection to the destination email
+    this.https.addConnection(this.destinationEmail).subscribe((successful) =>{
+      // If we get a dont get an error 
+      if(successful){
+        alert("Connection added successfully!")
+        this.modal.dismiss(this.destinationEmail, 'confirm');
+        window.location.reload();
+      } // If we do
+      else{
+        alert("Something went wrong. Please try again.")
+      }
     })
-    if(res.status === 200) {
-      alert("Connection added successfully!")
-      this.modal.dismiss(this.destinationEmail, 'confirm');
-      window.location.reload();
-    } else {
-      alert("Something went wrong. Please try again.")
-    }
   }
 
   onWillDismiss(event: Event) {
