@@ -2,7 +2,7 @@ import { Observable, Subject, of } from 'rxjs';
 import { AccountService } from './account.service';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { backend_url, User, UserData, ProfilePic, ConnectionData, ProfilePicData} from './info';
+import { backend_url, User, UserData, ProfilePic, ConnectionData, ImageData} from './info';
 
 @Injectable({
   providedIn: 'root'
@@ -181,8 +181,8 @@ export class HttpsService {
       // Create the URL for the put request
       const url = backend_url + 'users/' + userData.Email + '/image';
       
-      let updatedImage = new ProfilePicData();
-      updatedImage.ProfilePic = base64Data;
+      let updatedImage = new ImageData();
+      updatedImage.image = base64Data;
 
       // The HTTP put request
       this.http.put(url, updatedImage).subscribe({

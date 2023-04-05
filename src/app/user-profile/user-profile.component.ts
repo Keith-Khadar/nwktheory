@@ -27,7 +27,3 @@ export class UserProfileComponent implements OnInit{
     this.photoService.addNewToGallery();
   }
 }
-
-interface ProfilePic {
-  "ProfilePic" : string
-};

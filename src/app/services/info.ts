@@ -13,6 +13,9 @@ export interface User{
 export interface ProfilePic{
     ProfilePic: string
 }
+export interface image{
+    image: string
+}
 export interface Connection{
     from: string,
     to: string,
@@ -28,7 +31,7 @@ export class UserData implements User{
     constructor() {
         this.Name = "";
         this.Email = "";
-        this.ProfilePic = "";
+        this.ProfilePic = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
         this.Connections =[];
     }
 }
@@ -47,3 +50,11 @@ export class ProfilePicData implements ProfilePic{
         this.ProfilePic = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
     }
 }
+
+export class ImageData implements image{
+    image: string;
+    constructor(){
+        this.image = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+    }
+}
+
