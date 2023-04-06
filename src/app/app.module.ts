@@ -1,3 +1,4 @@
+import { MessageService } from './message.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -19,6 +20,8 @@ import { LoginComponent } from './login/login.component';
 // This is more sending https requests
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorHandler } from './http-error-handler.service';
+
 
 @NgModule({
   declarations: [
@@ -44,7 +47,8 @@ import { FormsModule } from '@angular/forms';
     AppRoutingModule,
     FormsModule,
   ],
-  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},],
+  providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+  HttpErrorHandler, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

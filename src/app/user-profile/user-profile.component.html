@@ -1,5 +1,5 @@
 <ion-content class="ion-padding">
-    <div class="glow-effect">
+    <div class="glow-effect" *ngIf="auth.user$ | async as user">
         <ion-card class="profile-card" id="profile-card">
             <div class="profile-image-container">
                 <ion-img class="profile-image" [src]="photoService.photo.webviewPath"></ion-img>
@@ -11,13 +11,13 @@
             </div>
     
             <ion-card-header>
-            <ion-card-title>{{ account.userData.Name }}</ion-card-title>
+            <ion-card-title>{{ user.name }}</ion-card-title>
             </ion-card-header>
     
             <ion-card-content>
             <ion-item>
                 <ion-icon name="mail-outline"></ion-icon>
-                <ion-label>{{ account.userData.Email }}</ion-label>
+                <ion-label>{{ user.email }}</ion-label>
             </ion-item>
             </ion-card-content>
         </ion-card>

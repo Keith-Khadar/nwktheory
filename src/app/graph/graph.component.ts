@@ -1,11 +1,14 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import HighchartsNetworkGraph from 'highcharts/modules/networkgraph';
-import { PanZoomConfig } from 'ngx-panzoom';
-
-// Custom Services
-import { HttpsService } from '../services/https.service';
-import { Connection } from '../services/info';
+import { AuthService } from '@auth0/auth0-angular';
+import { DOCUMENT } from '@angular/common';
+import { PanZoomConfig, PanZoomAPI, PanZoomModel, PanZoomConfigOptions } from 'ngx-panzoom';
+import { HttpClient } from '@angular/common/http';
+import { HttpErrorHandler } from '../http-error-handler.service';
+import { HandleError } from '../http-error-handler.service';
+import { Subscription } from 'rxjs';
+import { Connection, Node, MyPoint, ProfilePic } from './types';
 
 
 HighchartsNetworkGraph(Highcharts);
@@ -15,67 +18,124 @@ HighchartsNetworkGraph(Highcharts);
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss'],
 })
-export class GraphComponent implements AfterViewInit {
-  constructor(private https: HttpsService) {}
+export class GraphComponent implements AfterViewInit, OnInit, OnDestroy {
+  constructor(@Inject(DOCUMENT) public document: Document,
+  public auth: AuthService, private http: HttpClient, httpErrorHandler: HttpErrorHandler) {}
 
+  userEmail: string = ""
+  userName: string = ""
+  url = "https://nwk.tehe.xyz:3000/"
+  imageExt = ""
   Connections: Array<Connection> = []
 
   panZoomConfig: PanZoomConfig = new PanZoomConfig();
+  private panZoomAPI: PanZoomAPI|null = null;
+  private apiSubscription: Subscription = new Subscription();
+  private modelChangedSubscription: Subscription = new Subscription();
 
+  ngOnInit(): void {
+    this.panZoomConfig.keepInBounds = true;
+    this.panZoomConfig.keepInBoundsRestoreForce = 2.0;
+    this.panZoomConfig.keepInBoundsDragPullback = 2.0;
+    this.apiSubscription = this.panZoomConfig.api.subscribe( (api: PanZoomAPI) => this.panZoomAPI = api );
+    this.modelChangedSubscription = this.panZoomConfig.modelChanged.subscribe( (model: PanZoomModel) => this.onModelChanged(model) );
+  }
+
+  ngOnDestroy(): void {
+    this.apiSubscription.unsubscribe();
+    this.modelChangedSubscription.unsubscribe();
+  }
+
+  onModelChanged(model: PanZoomModel): void {}
+
+  zoomIn(): void {
+    if (this.panZoomAPI) {
+      this.panZoomAPI.zoomIn();
+    }
+  }
+
+  zoomOut(): void {
+    if (this.panZoomAPI) {
+      this.panZoomAPI.zoomOut();
+    }
+  }
+  
+  // reset(): void {
+  //   if (this.panZoomAPI) {
+  //     this.panZoomAPI.reset();
+  //   }
+  // }
 
   public ngAfterViewInit(): void {
-    // Use the custom service to get the user from the database 
-    this.https.getUser(true).subscribe((user) => {
-      // Save the connections gathered from the database into the connections array
-      this.Connections = user.Connections;
-      // Then create the chart
-      this.createChartNWK()
-    });
+    this.auth.user$.subscribe((user) => {
+      this.userEmail = user!.email!
+      this.userName = user!.name!
+      this.http.get<ProfilePic>(this.url + 'users/' + this.userEmail + '?profilepic=true').subscribe((image) =>{
+        this.imageExt = image.ProfilePic.substring(image.ProfilePic.lastIndexOf('.'));
+        fetch(`${this.url}users/${this.userEmail}`)
+        .then((res) => res.json())
+        .then((data) => {
+          data.Connections.forEach((connection: Node) => {
+            this.Connections.push({
+              from: connection.from,
+              to: connection.to,
+              imageSrc: this.url + 'static/images/' + this.userEmail + '_profile' + this.imageExt
+            })
+          })
+        })
+        .then(() => {
+          this.createChartNWK()
+        })
+      });
+
+    })
   }
 
   private createChartNWK(): void {
-    const chart = Highcharts.chart('chart-nwk', {
-      title: {
-        text: ''
-      },
+    Highcharts.chart('chart-nwk', {
       chart: {
-          type: 'networkgraph',
-          height: '750'
+        type: 'networkgraph',
+      },
+      title: {
+        text: null
       },
       credits: {
         enabled: false
-      },
-      draggable: {
-        draggable: false,
       },
       plotOptions: {
         networkgraph: {
           keys: ['from', 'to'],
           layoutAlgorithm: {
-            enableSimulation: false,
+            enableSimulation: true,
+            integration: 'verlet',
+            linkLength: 100
           }
         }
       },
-      series: [
-        {
-          accessibility: {
-            enabled: false,
-          },
-          marker: {
-            radius: 10
-          },
-  
-          type: 'networkgraph',
-          dataLabels: {
-            enabled: true,
-          },
-          draggable: false,
-          layoutAlgorithm: {
-            enableSimulation: false,
-          },
-          data: this.Connections,
-        }
-      ]
-    } as Highcharts.Options);
+      series: [{
+        marker: {
+          radius: 13,
+        },
+        dataLabels: {
+          enabled: true,
+          linkFormat: '',
+          allowOverlap: true,style: {
+                        textOutline: false 
+                    }
+        },
+        data: this.Connections,
+        nodes: this.Connections.map((connection: Connection) => {
+          return {
+            id: connection.from,
+            marker: {
+              radius: 30,
+              symbol: 'url(' + connection.imageSrc + ')',
+              width:'100',
+              height:'100'
+            },
+          }
+        })
+      }]
+    } as any);
   }
 }

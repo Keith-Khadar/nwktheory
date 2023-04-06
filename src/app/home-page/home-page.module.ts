@@ -1,3 +1,4 @@
+import { UsersModule } from './../users/users.module';
 import { GraphComponent } from './../graph/graph.component';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -10,6 +11,7 @@ import { HomePageRoutingModule } from './home-page-routing.module';
 // Import the Pan Zoom Module
 import { NgxPanZoomModule } from 'ngx-panzoom';
 
+
 @NgModule({
   declarations: [HomePageComponent, GraphComponent],
   imports: [
@@ -17,6 +19,7 @@ import { NgxPanZoomModule } from 'ngx-panzoom';
     CommonModule,
     FormsModule,
     HomePageRoutingModule,
+    UsersModule,
     NgxPanZoomModule
   ]
 })
