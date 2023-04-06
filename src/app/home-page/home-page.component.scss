@@ -1,3 +1,6 @@
-ion-content {
-  --overflow: hidden;
+.what {
+  position: sticky;
+  top: 50vh;
+  left: 45vw;
+  z-index: 100;
 }
