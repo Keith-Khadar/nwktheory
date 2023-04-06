@@ -58,6 +58,8 @@ func (s *Server) Start() error {
 	router.HandleFunc("/users/{email}/connections", s.handleCreateUserConnection).Methods("POST", "OPTIONS")
 	router.HandleFunc("/users/{email}/connections", s.handleDeleteUserConnection).Methods("DELETE", "OPTIONS")
 	router.HandleFunc("/chat", s.handleSendMessage).Methods("POST", "OPTIONS")
+	router.HandleFunc("/channels", s.handleCreateChannel).Methods("POST", "OPTIONS")
+	router.HandleFunc("/channels", s.handleGetChannel).Methods("GET", "OPTIONS")
 
 	// Static routes
 	router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("data/images"))))
