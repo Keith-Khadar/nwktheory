@@ -43,8 +43,8 @@ func (s *Server) Start() error {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// Get cert and key path
-	certPath := "/home/alex/certs/cert.pem"
-	keyPath := "/home/alex/certs/privkey.pem"
+	// certPath := "/home/alex/certs/cert.pem"
+	// keyPath := "/home/alex/certs/privkey.pem"
 
 	//Set up chat server
 
@@ -63,5 +63,5 @@ func (s *Server) Start() error {
 	router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("data/images"))))
 
 	// Serve web server
-	return http.ListenAndServeTLS(s.listenAddr, certPath, keyPath, handlers.CORS(originsOk, headersOk, methodsOk)(router))
+	return http.ListenAndServe(s.listenAddr, handlers.CORS(originsOk, headersOk, methodsOk)(router))
 }

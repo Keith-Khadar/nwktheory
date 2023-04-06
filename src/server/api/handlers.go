@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"image/jpeg"
 	"image/png"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -70,6 +69,11 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	connectionParam := r.URL.Query().Get("connections")
 	if connectionParam == "true" {
 		newUser.Connections = user.Connections
+	}
+
+	channelParam := r.URL.Query().Get("channels")
+	if channelParam == "true" {
+		newUser.Channels = user.Channels
 	}
 
 	// No parameters given return full user struct with all data
@@ -415,19 +419,35 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 
 func (s *Server) handleSendMessage(w http.ResponseWriter, r *http.Request) {
 
-	// Create map to hold message data to send to pusher
-	var data map[string]string
+	// Create message object
+	var message types.Message
 
-	// Convert JSON body to byte array
-	b, err := io.ReadAll(r.Body)
+	// Get POST body
+	json.NewDecoder(r.Body).Decode(&message)
+
+	// Check source user exists
+	user, err := s.store.GetUser(message.User)
 
 	if err != nil {
-		ApiHttpError(w, err, http.StatusUnprocessableEntity, "invalid message format!")
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "Source user does not exist!")
+
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
 	}
 
-	// Unmarshal data to map
-	json.Unmarshal(b, &data)
-	
+	// Check if user is in the channel
+	for _, currChannel := range user.Channels {
+
+		if currChannel == message.Channel {
+			break
+		}
+	}
+
 	// Send message
-	s.pusherClient.Trigger(data["To"], data["From"], data)
+	s.pusherClient.Trigger(message.Channel, "new-message", message.Message)
 }
