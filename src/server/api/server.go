@@ -13,20 +13,23 @@ import (
 type Server struct {
 	listenAddr string
 	store      storage.Storage
+	pusherClient pusher.Client
 }
 
-var client = pusher.Client{
-	AppID:   "1578492",
-	Key:     "37edea490ece53aa7ed1",
-	Secret:  "6b8fec13abbfb0175590",
-	Cluster: "mt1",
-	Secure:  true,
-}
 
 func NewServer(listenAddr string, store storage.Storage) *Server {
 	return &Server{
 		listenAddr: listenAddr,
 		store:      store,
+
+		// Include the pusher client object into the server object
+		pusherClient: pusher.Client{
+			AppID:   "1578492",
+			Key:     "37edea490ece53aa7ed1",
+			Secret:  "6b8fec13abbfb0175590",
+			Cluster: "mt1",
+			Secure:  true,
+		},
 	}
 }
 
@@ -40,8 +43,8 @@ func (s *Server) Start() error {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// Get cert and key path
-	certPath := "/home/go-user/certs/cert.pem"
-	keyPath := "/home/go-user/certs/privkey.pem"
+	certPath := "/home/alex/certs/cert.pem"
+	keyPath := "/home/alex/certs/privkey.pem"
 
 	//Set up chat server
 
@@ -54,6 +57,7 @@ func (s *Server) Start() error {
 	router.HandleFunc("/users/{email}/image", s.handleSetUserProfilePic).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/users/{email}/connections", s.handleCreateUserConnection).Methods("POST", "OPTIONS")
 	router.HandleFunc("/users/{email}/connections", s.handleDeleteUserConnection).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/chat", s.handleSendMessage).Methods("POST", "OPTIONS")
 
 	// Static routes
 	router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("data/images"))))

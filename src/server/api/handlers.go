@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -410,4 +411,23 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 	} else {
 		s.store.DeleteConnection(queriedDestinationUser, queriedDestinationUser, queriedSourceUser)
 	}
+}
+
+func (s *Server) handleSendMessage(w http.ResponseWriter, r *http.Request) {
+
+	// Create map to hold message data to send to pusher
+	var data map[string]string
+
+	// Convert JSON body to byte array
+	b, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		ApiHttpError(w, err, http.StatusUnprocessableEntity, "invalid message format!")
+	}
+
+	// Unmarshal data to map
+	json.Unmarshal(b, &data)
+	
+	// Send message
+	s.pusherClient.Trigger(data["To"], data["From"], data)
 }
