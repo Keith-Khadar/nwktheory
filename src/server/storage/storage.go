@@ -9,5 +9,6 @@ type Storage interface {
 	InsertConnection(Email string, Connection *types.Connection) error
 	DeleteUser(Email string) error
 	DeleteConnection(UserEmail string, SourceUser string, DestinationUser string) error
-	GetChannels(id string) (error)
+	GetChannel(ID string) (*types.Channel, error)
+	InsertChannel(Channel *types.Channel) (error)
 }

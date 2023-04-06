@@ -206,9 +206,33 @@ func (s *MongoStorage) DeleteConnection(UserEmail string, SourceUser string, Des
 	return errors.New("connection does not exist")
 }
 
-func (s *MongoStorage) GetChannels(id string) error {
+func (s *MongoStorage) GetChannel(ID string) (*types.Channel, error) {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.ChannelCollectionName)
 
-	return nil
+	var channel types.Channel
+
+	filter := bson.D{{Key: "id", Value: ID}}
+
+	err := coll.FindOne(context.TODO(), filter).Decode(&channel)
+
+	return &channel, err
+}
+
+func (s *MongoStorage) InsertChannel(Channel *types.Channel) (error) {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.ChannelCollectionName)
+
+	_, err := s.GetChannel(Channel.ID)
+	if err == nil {
+		return errors.New("channel already exists")
+ 	}
+
+	if types.ValidateChannel(Channel) {
+		result, _ := coll.InsertOne(context.TODO(), Channel)
+		fmt.Printf("Inserted channel: [ID: %v] with _id: %v", Channel.ID, result)
+		return nil
+	} else {
+		return errors.New("invalid channel")
+	}
 }
 
 // Taken from GeeksForGeeks
