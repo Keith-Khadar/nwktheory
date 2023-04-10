@@ -16,11 +16,12 @@ import (
 
 type MongoStorage struct {
 	DatabaseName   string
-	CollectionName string
+	UserCollectionName string
+	ChannelCollectionName string
 	Client         *mongo.Client
 }
 
-func NewMongoStorage(DatabaseName string, CollectionName string) *MongoStorage {
+func NewMongoStorage(DatabaseName string, UserCollectionName string, ChannelCollectionName string) *MongoStorage {
 	// Get client, ctx, cancel, and err from connect method
 	client, ctx, cancel, err := connect("mongodb://localhost:27017")
 	if err != nil {
@@ -39,13 +40,14 @@ func NewMongoStorage(DatabaseName string, CollectionName string) *MongoStorage {
 	// Return MongoStorage object with client pointer
 	return &MongoStorage{
 		DatabaseName:   DatabaseName,
-		CollectionName: CollectionName,
+		UserCollectionName: UserCollectionName,
+		ChannelCollectionName: ChannelCollectionName,
 		Client:         client,
 	}
 }
 
 func (s *MongoStorage) GetUser(Email string) (*types.User, error) {
-	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
 	// Create var to capture data from db
 	var user types.User
@@ -59,7 +61,7 @@ func (s *MongoStorage) GetUser(Email string) (*types.User, error) {
 }
 
 func (s *MongoStorage) InsertUser(user *types.User) error {
-	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
 	_, err := s.GetUser(user.Email)
 	if err == nil {
@@ -76,7 +78,7 @@ func (s *MongoStorage) InsertUser(user *types.User) error {
 }
 
 func (s *MongoStorage) DeleteUser(Email string) error {
-	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
 	_, err := s.GetUser(Email)
 
@@ -95,7 +97,7 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 }
 
 func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string) error {
-	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
 	// Select document with Email from function parameter
 	filter := bson.M{"email": Email}
@@ -135,7 +137,7 @@ func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string) 
 }
 
 func (s *MongoStorage) InsertConnection(Email string, connection *types.Connection) error {
-	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
 	// Select document with Email from function parameter
 	filter := bson.M{"email": Email}
@@ -177,7 +179,7 @@ func (s *MongoStorage) InsertConnection(Email string, connection *types.Connecti
 }
 
 func (s *MongoStorage) DeleteConnection(UserEmail string, SourceUser string, DestinationUser string) error {
-	coll := s.Client.Database(s.DatabaseName).Collection(s.CollectionName)
+	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
 	user, err := s.GetUser(UserEmail)
 
@@ -202,6 +204,35 @@ func (s *MongoStorage) DeleteConnection(UserEmail string, SourceUser string, Des
 	}
 
 	return errors.New("connection does not exist")
+}
+
+func (s *MongoStorage) GetChannel(ID string) (*types.Channel, error) {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.ChannelCollectionName)
+
+	var channel types.Channel
+
+	filter := bson.D{{Key: "id", Value: ID}}
+
+	err := coll.FindOne(context.TODO(), filter).Decode(&channel)
+
+	return &channel, err
+}
+
+func (s *MongoStorage) InsertChannel(Channel *types.Channel) (error) {
+	coll := s.Client.Database(s.DatabaseName).Collection(s.ChannelCollectionName)
+
+	_, err := s.GetChannel(Channel.ID)
+	if err == nil {
+		return errors.New("channel already exists")
+ 	}
+
+	if types.ValidateChannel(Channel) {
+		result, _ := coll.InsertOne(context.TODO(), Channel)
+		fmt.Printf("Inserted channel: [ID: %v] with _id: %v", Channel.ID, result)
+		return nil
+	} else {
+		return errors.New("invalid channel")
+	}
 }
 
 // Taken from GeeksForGeeks

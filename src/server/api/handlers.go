@@ -71,6 +71,11 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 		newUser.Connections = user.Connections
 	}
 
+	channelParam := r.URL.Query().Get("channels")
+	if channelParam == "true" {
+		newUser.Channels = user.Channels
+	}
+
 	// No parameters given return full user struct with all data
 	if nameParam == "" && emailParam == "" && profilePicParam == "" &&
 		connectionParam == "" {
@@ -409,5 +414,87 @@ func (s *Server) handleDeleteUserConnection(w http.ResponseWriter, r *http.Reque
 		ApiHttpError(w, err, http.StatusInternalServerError, "")
 	} else {
 		s.store.DeleteConnection(queriedDestinationUser, queriedDestinationUser, queriedSourceUser)
+	}
+}
+
+func (s *Server) handleSendMessage(w http.ResponseWriter, r *http.Request) {
+	LogTime()
+	fmt.Printf("Endpoint Hit: handleSendMessage from %v\n", r.RemoteAddr)
+
+	// Create message object
+	var message types.Message
+
+	// Get POST body
+	json.NewDecoder(r.Body).Decode(&message)
+
+	// Check source user exists
+	user, err := s.store.GetUser(message.User)
+
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "Source user does not exist!")
+
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
+	}
+
+	// Check if user is in the channel
+	for _, currChannel := range user.Channels {
+
+		if currChannel == message.Channel {
+			break
+		}
+	}
+
+	// Send message
+	s.pusherClient.Trigger(message.Channel, "new-message", message.Message)
+}
+
+func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
+	LogTime()
+	fmt.Printf("Endpoint Hit: handleCreateChannel from %v\n", r.RemoteAddr)
+
+	// Create channel object
+	var reqChannel types.Channel
+	
+	// Get POST body
+	json.NewDecoder(r.Body).Decode(&reqChannel)
+
+	// Check if chanel exists
+	channel, err := s.store.GetChannel(reqChannel.ID)
+
+	if err != nil {
+		// Return HTTP 404 if user does not exist in db
+		if strings.Contains(fmt.Sprint(err), "no documents") {
+			ApiHttpError(w, err, http.StatusNotFound, "Channel does not exist!")
+
+		} else { // Catch all
+			ApiHttpError(w, err, http.StatusInternalServerError, "")
+		}
+		// Exit here if error
+		return
+	}
+
+	s.store.InsertChannel(channel)
+}
+
+func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {
+	LogTime()
+	fmt.Printf("Endpoint Hit: handleGetChannel from %v\n", r.RemoteAddr)
+
+	var err error
+	idParam := r.URL.Query().Get("id")
+	if idParam != "" {
+		_, err = s.store.GetChannel(idParam)
+	}
+
+	if err != nil {
+		json.NewEncoder(w).Encode(true)
+	} else {
+		json.NewEncoder(w).Encode(false)
 	}
 }
