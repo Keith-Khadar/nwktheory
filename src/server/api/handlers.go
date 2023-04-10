@@ -493,8 +493,8 @@ func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		json.NewEncoder(w).Encode("true")
+		json.NewEncoder(w).Encode(true)
 	} else {
-		json.NewEncoder(w).Encode("false")
+		json.NewEncoder(w).Encode(false)
 	}
 }
