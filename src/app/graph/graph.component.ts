@@ -1,7 +1,8 @@
 import { AfterViewInit, Component } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import HighchartsNetworkGraph from 'highcharts/modules/networkgraph';
-import { PanZoomConfig } from 'ngx-panzoom';
+import { PanZoomConfig, PanZoomAPI, PanZoomModel, PanZoomConfigOptions } from 'ngx-panzoom';
+import { Subscription, lastValueFrom } from 'rxjs';
 
 // Custom Services
 import { HttpsService } from '../services/https.service';
@@ -15,67 +16,108 @@ HighchartsNetworkGraph(Highcharts);
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss'],
 })
+
+
 export class GraphComponent implements AfterViewInit {
   constructor(private https: HttpsService) {}
 
+  ImageURLS: Array<string> = []
   Connections: Array<Connection> = []
 
-  panZoomConfig: PanZoomConfig = new PanZoomConfig();
+  panZoomConfig: PanZoomConfig = new PanZoomConfig();private panZoomAPI: PanZoomAPI|null = null;
+  private apiSubscription: Subscription = new Subscription();
+  private modelChangedSubscription: Subscription = new Subscription();
+
+  ngOnInit(): void {
+    this.panZoomConfig.keepInBounds = true;
+    this.panZoomConfig.keepInBoundsRestoreForce = 2.0;
+    this.panZoomConfig.keepInBoundsDragPullback = 2.0;
+    this.apiSubscription = this.panZoomConfig.api.subscribe( (api: PanZoomAPI) => this.panZoomAPI = api );
+    this.modelChangedSubscription = this.panZoomConfig.modelChanged.subscribe( (model: PanZoomModel) => this.onModelChanged(model));
+  }
+
+  ngOnDestroy(): void {
+    this.apiSubscription.unsubscribe();
+    this.modelChangedSubscription.unsubscribe();
+  }
+
+  onModelChanged(model: PanZoomModel): void {}
+
+  zoomIn(): void {
+    if (this.panZoomAPI) {
+      this.panZoomAPI.zoomIn();
+    }
+  }
+
+  zoomOut(): void {
+    if (this.panZoomAPI) {
+      this.panZoomAPI.zoomOut();
+    }
+  }
 
 
   public ngAfterViewInit(): void {
     // Use the custom service to get the user from the database 
-    this.https.getUser(true).subscribe((user) => {
+    this.https.getUser(true).subscribe(async (user) => {
       // Save the connections gathered from the database into the connections array
       this.Connections = user.Connections;
+      const promises = this.Connections.map(async (connection: Connection) => {
+          const url = await this.https.getImageFromUser(connection.to)
+          this.ImageURLS.push(url)
+      })
+      await Promise.all(promises)
+      
       // Then create the chart
       this.createChartNWK()
-    });
+    }); 
   }
 
   private createChartNWK(): void {
-    const chart = Highcharts.chart('chart-nwk', {
-      title: {
-        text: ''
-      },
+    Highcharts.chart('chart-nwk', {
       chart: {
-          type: 'networkgraph',
-          height: '750'
+        type: 'networkgraph',
+      },
+      title: {
+        text: null
       },
       credits: {
         enabled: false
-      },
-      draggable: {
-        draggable: false,
       },
       plotOptions: {
         networkgraph: {
           keys: ['from', 'to'],
           layoutAlgorithm: {
-            enableSimulation: false,
+            enableSimulation: true,
+            integration: 'verlet',
+            linkLength: 100
           }
         }
       },
-      series: [
-        {
-          accessibility: {
-            enabled: false,
-          },
-          marker: {
-            radius: 10
-          },
-  
-          type: 'networkgraph',
-          dataLabels: {
-            enabled: true,
-          },
-          draggable: false,
-          layoutAlgorithm: {
-            enableSimulation: false,
-          },
-          data: this.Connections,
-        }
-      ]
-    } as Highcharts.Options);
+      series: [{
+        marker: {
+          radius: 13,
+        },
+        dataLabels: {
+          enabled: true,
+          linkFormat: '',
+          allowOverlap: true,style: {
+                        textOutline: false 
+                    }
+        },
+        data: this.Connections,
+        nodes: this.Connections.map((connection: Connection, index) => {
+
+          return {
+            id: connection.to,
+            marker: {
+              radius: 100,
+              symbol: 'url(' + this.ImageURLS[index] + ')',
+              width:'50',
+              height:'50'
+            },
+          }
+        })
+      }]
+    } as any);
   }
 }

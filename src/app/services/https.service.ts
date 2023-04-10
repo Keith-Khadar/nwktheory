@@ -1,8 +1,9 @@
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, Subject, lastValueFrom, of } from 'rxjs';
 import { AccountService } from './account.service';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { backend_url, User, UserData, ProfilePic, ConnectionData, ImageData} from './info';
+
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +72,25 @@ export class HttpsService {
     return imageSubject.asObservable();
   }
 
+  async getImageFromUser(userEmail: string): Promise<string>{
+    // Create a string to store the image url
+    let imageUrl = ''
+
+    //Get the account info from the account service
+    let imageExt = '';
+    // Create the URL for the get request to get the image extension
+    const url = backend_url + 'users/' + userEmail + '?profilepic=true'; 
+    const res: Response = await fetch(url)
+    const data: ProfilePic = await res.json()
+
+    // Get the image ext
+    imageExt = data.ProfilePic.substring(data.ProfilePic.lastIndexOf('.'));
+
+    // Create the url for the static image
+    imageUrl = backend_url + 'static/images/' + userEmail + '_profile' + imageExt;
+
+    return imageUrl;
+  }
 
   // Create Information //
 
