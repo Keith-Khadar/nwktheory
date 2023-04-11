@@ -1,4 +1,9 @@
 <div class="panZoomDiv">
+  <div class="panZoomControls">
+    <button (click)="zoomIn()">Zoom In</button>
+    <button (click)="zoomOut()">Zoom Out</button>
+    <button (click)="zoomIn()">Reset</button>
+  </div>
   <pan-zoom [config]="panZoomConfig">
     <div id="chart-nwk" class="chart"></div>
   </pan-zoom>
