@@ -79,9 +79,9 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	// No parameters given return full user struct with all data
 	if nameParam == "" && emailParam == "" && profilePicParam == "" &&
 		connectionParam == "" {
-			json.NewEncoder(w).Encode(user)
-			return
-		}
+		json.NewEncoder(w).Encode(user)
+		return
+	}
 
 	// Return partial data based on params
 	json.NewEncoder(w).Encode(newUser)
@@ -100,7 +100,6 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	err := s.store.InsertUser(&user)
 
 	if err != nil {
-
 		// Invalid user submission
 		if strings.Contains(fmt.Sprint(err), "invalid user") {
 			ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
@@ -204,7 +203,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	// Determine image type
 	dataTypeStartIndex := strings.Index(string(image), ":")
 	dataTypeEndIndex := strings.Index(string(image), ";")
-	imageType := string(image[dataTypeStartIndex + 1:dataTypeEndIndex])
+	imageType := string(image[dataTypeStartIndex+1 : dataTypeEndIndex])
 
 	// Check if data string is properly formated
 	// Size 7 is for "image/x" with x being a 1 character file extension
@@ -460,26 +459,23 @@ func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
 
 	// Create channel object
 	var reqChannel types.Channel
-	
+
 	// Get POST body
 	json.NewDecoder(r.Body).Decode(&reqChannel)
 
 	// Check if chanel exists
-	channel, err := s.store.GetChannel(reqChannel.ID)
+	err := s.store.InsertChannel(&reqChannel)
 
 	if err != nil {
-		// Return HTTP 404 if user does not exist in db
-		if strings.Contains(fmt.Sprint(err), "no documents") {
-			ApiHttpError(w, err, http.StatusNotFound, "Channel does not exist!")
+		// Invalid channel submission
+		if strings.Contains(fmt.Sprint(err), "invalid channel") {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
 
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
-		}
-		// Exit here if error
-		return
-	}
 
-	s.store.InsertChannel(channel)
+		}
+	}
 }
 
 func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {

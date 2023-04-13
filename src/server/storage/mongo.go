@@ -234,15 +234,22 @@ func (s *MongoStorage) InsertChannel(Channel *types.Channel) error {
 	_, err := s.GetChannel(Channel.ID)
 	if err == nil {
 		return errors.New("channel already exists")
-	}
-
-	if types.ValidateChannel(Channel) {
-		result, _ := coll.InsertOne(context.TODO(), Channel)
-		fmt.Printf("Inserted channel: [ID: %v] with _id: %v", Channel.ID, result)
-		return nil
 	} else {
-		return errors.New("invalid channel")
+		if types.ValidateChannel(Channel) {
+			result, _ := coll.InsertOne(context.TODO(), Channel)
+			fmt.Printf("Inserted channel: [ID: %v] with _id: %v", Channel.ID, result)
+			return nil
+		} else {
+			return errors.New("invalid channel")
+		}
 	}
+}
+
+func (s *MongoStorage) DropDB(Name string) error {
+
+	err := s.Client.Database(Name).Drop(context.Background())
+
+	return err
 }
 
 // Taken from GeeksForGeeks
