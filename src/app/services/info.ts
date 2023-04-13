@@ -1,5 +1,5 @@
 // Variables
-const backend_url = 'https://nwk.tehe.xyz:3000/';
+const backend_url = 'http://10.136.29.129:3000/';
 export {backend_url}
 
 
@@ -9,6 +9,7 @@ export interface User{
     Email: string,
     ProfilePic: string,
     Connections: [];
+    Channels: [];
 }
 export interface ProfilePic{
     ProfilePic: string
@@ -20,6 +21,21 @@ export interface Connection{
     from: string,
     to: string,
 }
+export interface Message{
+    User: string,
+    Channel: string,
+    Message: string
+}
+
+
+// pusher environment variables
+export const environment = {
+    production: false,
+    pusher: {
+      key: '1578492',
+      cluster: 'mt1',
+    },
+  };
 
 // Classes for storing data
 export class UserData implements User{
@@ -27,12 +43,14 @@ export class UserData implements User{
     Email: string;
     ProfilePic: string;
     Connections: [];
+    Channels: [];
 
     constructor() {
         this.Name = "";
         this.Email = "";
         this.ProfilePic = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
         this.Connections =[];
+        this.Channels = [];
     }
 }
 export class ConnectionData implements Connection{
@@ -44,6 +62,19 @@ export class ConnectionData implements Connection{
         this.to = "";
     }
 }
+export class MessageData implements Message{
+    User: string;
+    Channel: string;
+    Message: string;
+
+    constructor(){
+        this.User = "";
+        this.Channel = "";
+        this.Message = "";
+    }
+}
+
+
 export class ProfilePicData implements ProfilePic{
     ProfilePic: string;
     constructor(){
