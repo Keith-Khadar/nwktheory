@@ -7,18 +7,18 @@ import (
 	"server/types"
 	"time"
 
+	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"github.com/fatih/color"
 )
 
 type MongoStorage struct {
-	DatabaseName   string
-	UserCollectionName string
+	DatabaseName          string
+	UserCollectionName    string
 	ChannelCollectionName string
-	Client         *mongo.Client
+	Client                *mongo.Client
 }
 
 func NewMongoStorage(DatabaseName string, UserCollectionName string, ChannelCollectionName string) *MongoStorage {
@@ -39,10 +39,10 @@ func NewMongoStorage(DatabaseName string, UserCollectionName string, ChannelColl
 
 	// Return MongoStorage object with client pointer
 	return &MongoStorage{
-		DatabaseName:   DatabaseName,
-		UserCollectionName: UserCollectionName,
+		DatabaseName:          DatabaseName,
+		UserCollectionName:    UserCollectionName,
 		ChannelCollectionName: ChannelCollectionName,
-		Client:         client,
+		Client:                client,
 	}
 }
 
@@ -80,10 +80,20 @@ func (s *MongoStorage) InsertUser(user *types.User) error {
 func (s *MongoStorage) DeleteUser(Email string) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
-	_, err := s.GetUser(Email)
+	user, err := s.GetUser(Email)
 
 	if err != nil {
 		return err
+	}
+
+	for _, removeConnection := range user.Connections {
+		// Create paramters for db query
+		filter := bson.M{"email": removeConnection.DestinationUser}
+		changes := bson.M{"$pull": bson.M{"connections": bson.M{"sourceuser": removeConnection.DestinationUser, "destinationuser": removeConnection.SourceUser}}}
+
+		// Delete connection
+		_, err = coll.UpdateOne(context.TODO(), filter, changes)
+
 	}
 
 	// Find correct user
@@ -218,13 +228,13 @@ func (s *MongoStorage) GetChannel(ID string) (*types.Channel, error) {
 	return &channel, err
 }
 
-func (s *MongoStorage) InsertChannel(Channel *types.Channel) (error) {
+func (s *MongoStorage) InsertChannel(Channel *types.Channel) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.ChannelCollectionName)
 
 	_, err := s.GetChannel(Channel.ID)
 	if err == nil {
 		return errors.New("channel already exists")
- 	}
+	}
 
 	if types.ValidateChannel(Channel) {
 		result, _ := coll.InsertOne(context.TODO(), Channel)
@@ -284,6 +294,6 @@ func ping(client *mongo.Client, ctx context.Context) error {
 		return err
 	}
 	greenText := color.New(color.FgHiGreen).SprintFunc()
-	fmt.Printf("%v\n",greenText("MongoDB connected successfully"))
+	fmt.Printf("%v\n", greenText("MongoDB connected successfully"))
 	return nil
 }
