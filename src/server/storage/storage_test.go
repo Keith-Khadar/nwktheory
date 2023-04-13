@@ -206,3 +206,49 @@ func TestDeleteConnection(t *testing.T) {
 	assert.Equal(t, 0, len(userJim.Connections))
 	assert.Equal(t, 0, len(userMartha.Connections))
 }
+
+func TestGetChannel(t *testing.T) {
+	// Create storage
+	s:= NewMongoStorage("testing", "users", "channels")
+
+	// Create test channels
+	var testChannel *types.Channel = &types.Channel{
+		ID: "TestChannel",
+		Users: []string{"jim@test.com" , "martha@test.com"},
+	}
+
+	// Insert test channel
+	s.InsertChannel(testChannel)
+
+	// Get channel from store
+	returnedChannel, err := s.GetChannel("TestChannel")
+
+	// Check no errors are returned
+	assert.Nil(t, err)
+
+	// Check returned channel is the same as the inserted channel
+	assert.Equal(t, reflect.DeepEqual(returnedChannel, testChannel), true)
+}
+
+func TestInsertChannel(t *testing.T) {
+	// Create storage
+	s:= NewMongoStorage("testing", "users", "channels")
+
+	// Create test channels
+	var testChannel *types.Channel = &types.Channel{
+		ID: "TestChannel",
+		Users: []string{"jim@test.com", "martha@test.com"},
+	}
+
+	// Insert test channel
+	s.InsertChannel(testChannel)
+
+	// Get channel from store
+	returnedChannel, err := s.GetChannel("TestChannel")
+
+	// Check no errors are returned
+	assert.Nil(t, err)
+
+	// Check returned channel is the same as the inserted channel
+	assert.Equal(t, reflect.DeepEqual(returnedChannel, testChannel), true)
+}
