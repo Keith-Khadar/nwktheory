@@ -80,10 +80,20 @@ func (s *MongoStorage) InsertUser(user *types.User) error {
 func (s *MongoStorage) DeleteUser(Email string) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
-	_, err := s.GetUser(Email)
+	user, err := s.GetUser(Email)
 
 	if err != nil {
 		return err
+	}
+
+	for _, removeConnection := range user.Connections {
+		// Create paramters for db query
+		filter := bson.M{"email": removeConnection.DestinationUser}
+		changes := bson.M{"$pull": bson.M{"connections": bson.M{"sourceuser": removeConnection.DestinationUser, "destinationuser": removeConnection.SourceUser}}}
+
+		// Delete connection
+		_, err = coll.UpdateOne(context.TODO(), filter, changes)
+
 	}
 
 	// Find correct user

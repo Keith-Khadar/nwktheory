@@ -1,8 +1,8 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import HighchartsNetworkGraph from 'highcharts/modules/networkgraph';
 import { PanZoomConfig, PanZoomAPI, PanZoomModel, PanZoomConfigOptions } from 'ngx-panzoom';
-import { Subscription, lastValueFrom } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 // Custom Services
 import { HttpsService } from '../services/https.service';
@@ -11,15 +11,13 @@ import { Connection } from '../services/info';
 
 HighchartsNetworkGraph(Highcharts);
 
+
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss'],
 })
-
-
 export class GraphComponent implements AfterViewInit {
-  constructor(private https: HttpsService) {}
 
   ImageURLS: Array<string> = []
   Connections: Array<Connection> = []
@@ -28,35 +26,12 @@ export class GraphComponent implements AfterViewInit {
   private apiSubscription: Subscription = new Subscription();
   private modelChangedSubscription: Subscription = new Subscription();
 
+  constructor(private https: HttpsService) {}
+
+  dataFetched = false
+  viewInitialized = false
+
   ngOnInit(): void {
-    this.panZoomConfig.keepInBounds = true;
-    this.panZoomConfig.keepInBoundsRestoreForce = 2.0;
-    this.panZoomConfig.keepInBoundsDragPullback = 2.0;
-    this.apiSubscription = this.panZoomConfig.api.subscribe( (api: PanZoomAPI) => this.panZoomAPI = api );
-    this.modelChangedSubscription = this.panZoomConfig.modelChanged.subscribe( (model: PanZoomModel) => this.onModelChanged(model));
-  }
-
-  ngOnDestroy(): void {
-    this.apiSubscription.unsubscribe();
-    this.modelChangedSubscription.unsubscribe();
-  }
-
-  onModelChanged(model: PanZoomModel): void {}
-
-  zoomIn(): void {
-    if (this.panZoomAPI) {
-      this.panZoomAPI.zoomIn();
-    }
-  }
-
-  zoomOut(): void {
-    if (this.panZoomAPI) {
-      this.panZoomAPI.zoomOut();
-    }
-  }
-
-
-  public ngAfterViewInit(): void {
     // Use the custom service to get the user from the database 
     this.https.getUser(true).subscribe(async (user) => {
       // Save the connections gathered from the database into the connections array
@@ -66,13 +41,46 @@ export class GraphComponent implements AfterViewInit {
           this.ImageURLS.push(url)
       })
       await Promise.all(promises)
-      
-      // Then create the chart
+      this.dataFetched = true
       this.createChartNWK()
     }); 
+    this.panZoomConfig.keepInBounds = true;
+    this.panZoomConfig.keepInBoundsRestoreForce = 2.0;
+    this.panZoomConfig.keepInBoundsDragPullback = 2.0;
+    this.apiSubscription = this.panZoomConfig.api.subscribe( (api: PanZoomAPI) => this.panZoomAPI = api );
+    this.modelChangedSubscription = this.panZoomConfig.modelChanged.subscribe( (model: PanZoomModel) => this.onModelChanged(model));
   }
 
+  // panZoom functions
+  onModelChanged(model: PanZoomModel): void {}
+  zoomIn(): void {
+    if (this.panZoomAPI) {
+      this.panZoomAPI.zoomIn();
+    }
+  }
+  zoomOut(): void {
+    if (this.panZoomAPI) {
+      this.panZoomAPI.zoomOut();
+    }
+  }
+  
+  // Render graph once view initialzed
+  ngAfterViewInit(): void {
+    this.viewInitialized = true
+    this.createChartNWK()
+  }
+
+  // Destroy subscriptions
+  ngOnDestroy(): void {
+    this.apiSubscription.unsubscribe();
+    this.modelChangedSubscription.unsubscribe();
+  }
+
+  // Render when data has returned and data initialized
   private createChartNWK(): void {
+    if (!this.dataFetched || !this.viewInitialized)
+      return
+
     Highcharts.chart('chart-nwk', {
       chart: {
         type: 'networkgraph',
@@ -121,3 +129,4 @@ export class GraphComponent implements AfterViewInit {
     } as any);
   }
 }
+  
