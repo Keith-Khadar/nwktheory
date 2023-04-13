@@ -25,14 +25,8 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button id="open-modal">
-            <ion-icon name="chatbox-ellipses"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
-
     <div class="ion-padding">
-        <ion-item>
+        <ion-item [routerLink]="['/Chat/details']">
             <ion-avatar slot="start">
                 <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGpRx-LXxtShgx_s9AWDnnkHvYOLdGo6w3vg&usqp=CAU" />
             </ion-avatar>
@@ -46,29 +40,7 @@
             </ion-label>
         </ion-item>
     </div>
-    <form (ngSubmit)="submit()">
-        <input type="text" placeholder="Type a message..." [value]="message">
-        <button type="submit">Send</button>
-      </form>
-
 </ion-content>
-
-<ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>test</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeCreateChat()">Cancel</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-  
-    <ion-footer>
-      <ion-toolbar>
-        <ion-button expand="block" color="primary">Create Group Chat</ion-button>
-      </ion-toolbar>
-    </ion-footer>
-  </ion-modal>
   
   
   

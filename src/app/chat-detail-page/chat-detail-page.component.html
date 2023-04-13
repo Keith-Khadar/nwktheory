@@ -1,0 +1,38 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button [routerLink]="['/Chat']">
+                <ion-icon name="chevron-back-outline" size="large"></ion-icon>
+            </ion-button>
+            <ion-title>
+                {{GroupName}}
+            </ion-title>
+        </ion-buttons>
+      <ion-buttons>
+        <ion-searchbar color="light"></ion-searchbar>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon name="settings-outline" size="large"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+    <ion-list>
+      <ion-item *ngFor="let message of messages">
+        <ion-label>
+          {{message.text}}
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  
+  </ion-content>
+
+  <ion-footer>
+    <ion-item>
+        <ion-input [(ngModel)]="newMessage" placeholder="Type a message"></ion-input>
+        <ion-button (click)="sendMessage()">Send</ion-button>
+      </ion-item>
+  </ion-footer>

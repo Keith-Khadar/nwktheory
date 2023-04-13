@@ -1,6 +1,7 @@
 import { TabsComponent } from './tabs.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ChatDetailPageComponent } from '../chat-detail-page/chat-detail-page.component';
 
 
 const routes: Routes = [
@@ -21,6 +22,10 @@ const routes: Routes = [
         loadChildren: () => import("../chat-page/chat-page.module").then(m => m.ChatPageModule)
       },
       {
+        path: 'Chat/details',
+        component: ChatDetailPageComponent
+      },
+      {
         path: '',
         redirectTo: '/Home',
         pathMatch: 'full'
@@ -36,5 +41,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
 })
 export class TabsRoutingModule { }
