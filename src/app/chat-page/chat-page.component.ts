@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { OverlayEventDetail } from '@ionic/core/components';
+import { Component, ViewChild } from '@angular/core';
 import { HttpsService } from '../services/https.service';
 
+import { IonModal } from '@ionic/angular';
 
 @Component({
   selector: 'app-chat-page',
@@ -8,6 +10,9 @@ import { HttpsService } from '../services/https.service';
   styleUrls: ['./chat-page.component.scss']
 })
 export class ChatPageComponent {
+@ViewChild(IonModal) modal!: IonModal;
+
+
   messages: string[] = [];
   channels: string[] = [];
   message: string = "is gaming";
@@ -20,6 +25,18 @@ export class ChatPageComponent {
     this.https.createChannel("test2", ["stalkurmom@gmail.com"] );
   }
 
+  cancel(){
+    this.modal.dismiss(null, 'cancel');
+  }
+  confirm(){
+    this.modal.dismiss(null, 'confirm');
+  }
+  onWillDismiss(event: Event){
+    const ev = event as CustomEvent<OverlayEventDetail<string>>;
+    if(ev.detail.role === 'confirm'){
+      this.message = `Hello, ${ev.detail.data}!`
+    }
+  }
 
  
 }

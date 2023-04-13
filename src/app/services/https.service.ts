@@ -258,7 +258,7 @@ export class HttpsService {
       users.push(userData.Email);
 
       let channelCreation = {
-        Channel: channel,
+        ID: channel,
         Users: users
       };
 
