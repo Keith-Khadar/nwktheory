@@ -1,5 +1,5 @@
 // Variables
-const backend_url = 'http://10.136.29.129:3000/';
+const backend_url = 'http://nwk.tehe.xyz:3000/';
 export {backend_url}
 
 

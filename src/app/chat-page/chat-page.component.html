@@ -1,19 +1,27 @@
 <ion-header>
-    <ion-toolbar color="primary">
-      <ion-title>
-        Chat
-      </ion-title>
-
-      <ion-buttons slot="end">
-        <ion-button>
-            <ion-icon name="search"></ion-icon>
-        </ion-button>
-        <ion-button>
-            <ion-icon name="ellipsis-vertical"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-searchbar color="light"></ion-searchbar>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="create-outline" size="large"></ion-icon>
+      </ion-button>
+      <ion-button>
+        <ion-icon name="settings-outline" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment value="all">
+      <ion-segment-button value="all">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="favorites">
+        <ion-label>Favorites</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">

@@ -1,2 +1,21 @@
-
+ion-toolbar {
+    --ion-toolbar-height: 50px;
+  }
   
+  ion-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+  ion-searchbar {
+    --background: #f4f4f4;
+    --searchbar-input-background: #ffffff;
+    --searchbar-input-border-color: #f4f4f4;
+    margin-right: 8px;
+    margin-left: 8px;
+    width: 90%;
+
+    --border-radius: 10px;
+  }
