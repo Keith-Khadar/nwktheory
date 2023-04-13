@@ -235,6 +235,13 @@ func (s *MongoStorage) InsertChannel(Channel *types.Channel) (error) {
 	}
 }
 
+func (s *MongoStorage) DropDB(Name string) error {
+	
+	err := s.Client.Database(Name).Drop(context.Background())
+
+	return err
+}
+
 // Taken from GeeksForGeeks
 // URL: https://www.geeksforgeeks.org/how-to-use-go-with-mongodb/
 // ======================================
