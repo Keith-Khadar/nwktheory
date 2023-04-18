@@ -1,10 +1,41 @@
 <div class="panZoomDiv">
-  <div class="panZoomControls">
-    <button (click)="zoomIn()">Zoom In</button>
-    <button (click)="zoomOut()">Zoom Out</button>
-    <button (click)="zoomIn()">Reset</button>
-  </div>
+  <ion-fab slot="fixed" horizontal="begin" vertical="top" class="ion-padding">
+    <ion-fab-button (click)="zoomIn()" expand="block">
+      <ion-icon name="contract-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button (click)="zoomOut()" expand="block">
+      <ion-icon name="expand-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-button (click)="zoomReset()" expand="block">
+      <ion-icon name="reload-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <pan-zoom [config]="panZoomConfig">
     <div id="chart-nwk" class="chart"></div>
   </pan-zoom>
+
+  <ion-modal [isOpen]="isModalOpen">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Sum Boddie</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setOpen(false)">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div>
+          <label for="title">Title: Duuuude</label>
+        </div>
+        <div>
+          <p>
+            <label for="desc">Description:</label>         
+            This bozo needs Jesus
+          </p>
+        </div>
+        </ion-content>
+    </ng-template>
+  </ion-modal>
 </div>
