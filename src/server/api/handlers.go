@@ -491,9 +491,9 @@ func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
 			}
 			// Exit here if error
 			return
+		} else {
+			s.store.UpdateUser(user.Email, "", "", reqChannel.ID)
 		}
-
-		s.store.UpdateUser(user.Email, "", "", reqChannel.ID)
 	}
 }
 
