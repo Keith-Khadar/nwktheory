@@ -89,6 +89,32 @@ export class HttpsService {
     return imageUrl;
   }
 
+  getChannel(id: string): Observable<string[]>{
+    // Create an object to store the response in.
+    let usersSubject = new Subject<string[]>();
+
+    // Create the URL for the get request
+    const url = backend_url + 'channels/' + id;
+    // The HTTP get request
+    this.http.get<string[]>(url).subscribe({
+      next: (response) => {
+        // handle the response
+        usersSubject.next(response);
+      },
+      error: (error) => {
+        // handle error
+        if (error.status === 404) {
+          console.log('Channel not found');
+        } else {
+          console.log('An error occurred:', error.error.message);
+        }
+      }
+    });
+
+    // Return the user
+    return usersSubject.asObservable();
+  }
+
   checkChannel(channel: string): Observable<boolean>{
     let response = new Subject<boolean>();
 

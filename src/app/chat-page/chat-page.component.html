@@ -31,12 +31,12 @@
   
   <ion-content [fullscreen]="true">
       <div class="ion-padding">
-          <ion-item *ngFor="let channel of channels" routerLink="details" (click)="setCurrentChat(channel)">
+          <ion-item *ngFor="let channel of channels; index as i" routerLink="details" (click)="setCurrentChat(channel)">
               <ion-avatar slot="start">
                   <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGpRx-LXxtShgx_s9AWDnnkHvYOLdGo6w3vg&usqp=CAU" />
               </ion-avatar>
               <ion-label>
-                  <h2>{{channel}}</h2>
+                  <h2>{{channelNames[i]}}</h2>
                   <p> <ion-icon class="read" name="checkmark-done"></ion-icon> There</p>
               </ion-label>
               <ion-label slot="end" class="ion-text-right">

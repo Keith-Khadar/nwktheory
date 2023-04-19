@@ -8,7 +8,6 @@ import { ChatService } from '../services/chat.service';
 import { Connection } from '../services/info';
 
 
-
 @Component({
   selector: 'app-chat-page',
   templateUrl: './chat-page.component.html',
@@ -20,7 +19,10 @@ export class ChatPageComponent {
 @ViewChild(IonModal) modal!: IonModal;
 
   messages: string[] = [];
+  
   channels: string[] = [];
+  channelNames: string[] = [];
+
   newChannel: string = "";
 
   public connections: string[] = [];
@@ -34,6 +36,11 @@ export class ChatPageComponent {
         this.connections.push(connection.to);
       });
       console.log(user.Channels);
+      user.Channels.forEach((id) => {
+        this.https.getChannel(id).subscribe((names) => {
+          this.channelNames.push(names.toString());
+        })
+      })
     });
   }
 
@@ -43,6 +50,7 @@ export class ChatPageComponent {
   confirm(){
     this.modal.dismiss(this.recipients, 'confirm');
     this.https.createChannel(this.recipients);
+    location.reload();
   }
   onWillDismiss(event: Event){
     const ev = event as CustomEvent<OverlayEventDetail<string>>;

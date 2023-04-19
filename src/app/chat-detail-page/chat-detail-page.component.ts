@@ -15,6 +15,8 @@ export class ChatDetailPageComponent implements OnInit {
   newMessage = '';
   channelName = '';
 
+  recipients: string[] = [];
+
   constructor(private chatService: ChatService, private https: HttpsService, private router: Router){ 
     if(this.chatService.getSelectedChat() == ''){
       router.navigate(['/Chat'])
@@ -30,6 +32,9 @@ export class ChatDetailPageComponent implements OnInit {
     this.channelName = this.chatService.getSelectedChat();
     this.chatService.subscribe(this.channelName, 'new-message', (message:string) => {
       this.messages.push(message);
+    });
+    this.https.getChannel(this.channelName).subscribe((names) => {
+      this.recipients = names;
     });
   }
 }
