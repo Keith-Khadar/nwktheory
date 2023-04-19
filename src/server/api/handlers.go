@@ -490,11 +490,12 @@ func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
 				ApiHttpError(w, err, http.StatusInternalServerError, "")
 			}
 			// Exit here if error
-			return
+			break
 		} else {
 			s.store.UpdateUser(user.Email, "", "", reqChannel.ID)
 		}
 	}
+	return
 }
 
 func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {
