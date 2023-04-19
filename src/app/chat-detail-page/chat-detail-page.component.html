@@ -1,7 +1,7 @@
 <div class="ion-page" id="chat-content">
   <ion-header>
     <ion-toolbar>
-      <ion-title>{{chatService.getSelectedChat()}}</ion-title>
+      <ion-title>{{loadChat()}}</ion-title>
     </ion-toolbar>
       <ion-toolbar>
           <ion-buttons slot="start">
@@ -28,6 +28,9 @@
     <ion-content class="ion-padding">
       <ion-list>
         <ion-item *ngFor="let message of messages">
+          <ion-avatar slot="start">
+            <img src = {{message.userPic}} />
+          </ion-avatar>
           <ion-label>
             {{message.text}}
           </ion-label>

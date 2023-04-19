@@ -10,19 +10,23 @@ import { HttpsService } from '../services/https.service';
 export class ChatDetailPageComponent {
   GroupName = ''
   messages = [{
-    user: 'Jesus',
+    userPic: '#',
     text: 'Hi'
   }];
 
   newMessage = '';
 
-  constructor(public chatService: ChatService, private https: HttpsService){
-    this.chatService.subscribe('messages', 'new-message', (message:string) => {
-    this.messages.push({user: "IDK", text: message})
-  });
-  }
+  constructor(private chatService: ChatService, private https: HttpsService){ }
 
   sendMessage(){
     alert('sent!');
+  }
+
+  loadChat(): string{
+    let channelName = this.chatService.getSelectedChat();
+    this.chatService.subscribe(channelName, 'new-message', (message:string) => {
+      this.messages.push({userPic: "IDK", text: message})
+    });
+    return channelName;
   }
 }

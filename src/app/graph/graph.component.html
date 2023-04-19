@@ -1,8 +1,13 @@
 <div class="panZoomDiv">
   <div class="panZoomControls">
-    <button (click)="zoomIn()">Zoom In</button>
-    <button (click)="zoomOut()">Zoom Out</button>
-    <button (click)="zoomIn()">Reset</button>
+    <ion-buttons>
+      <ion-button (click)="zoomIn()">
+        <ion-icon slot="icon-only" name="add-circle-outline" size="large"></ion-icon>
+      </ion-button>
+      <ion-button (click)="zoomOut()" >
+        <ion-icon slot="icon-only" name="remove-circle-outline" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </div>
   <pan-zoom [config]="panZoomConfig">
     <div id="chart-nwk" class="chart"></div>
