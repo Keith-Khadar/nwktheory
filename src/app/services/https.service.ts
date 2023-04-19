@@ -2,14 +2,12 @@ import { Observable, Subject, lastValueFrom, of } from 'rxjs';
 import { AccountService } from './account.service';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { backend_url, User, UserData, ProfilePic, ConnectionData, ImageData} from './info';
-
+import { backend_url, User, UserData, ProfilePic, ConnectionData, ImageData, MessageData} from './info';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpsService {
-
   constructor(private http: HttpClient, private account: AccountService) { }
 
   // Retrieve Information //
@@ -71,7 +69,6 @@ export class HttpsService {
     })
     return imageSubject.asObservable();
   }
-
   async getImageFromUser(userEmail: string): Promise<string>{
     // Create a string to store the image url
     let imageUrl = ''
@@ -91,6 +88,49 @@ export class HttpsService {
 
     return imageUrl;
   }
+
+  getChannel(id: string): Observable<string[]>{
+    // Create an object to store the response in.
+    let usersSubject = new Subject<string[]>();
+
+    // Create the URL for the get request
+    const url = backend_url + 'channels/' + id;
+    // The HTTP get request
+    this.http.get<string[]>(url).subscribe({
+      next: (response) => {
+        // handle the response
+        usersSubject.next(response);
+      },
+      error: (error) => {
+        // handle error
+        if (error.status === 404) {
+          console.log('Channel not found');
+        } else {
+          console.log('An error occurred:', error.error.message);
+        }
+      }
+    });
+
+    // Return the user
+    return usersSubject.asObservable();
+  }
+
+  checkChannel(channel: string): Observable<boolean>{
+    let response = new Subject<boolean>();
+
+    const url = backend_url + 'channels?id=' + channel;
+    this.http.get<boolean>(url).subscribe({
+      next: (res) =>{
+        response.next(res);
+      },
+      error:(error) =>{
+        console.log('An error occurred when adding a user:', error.error.message);
+        response.next(false);
+      }
+    })
+    return response.asObservable();
+  }
+
 
   // Create Information //
 
@@ -206,6 +246,49 @@ export class HttpsService {
 
       // The HTTP put request
       this.http.put(url, updatedImage).subscribe({
+        error:(error) =>{ 
+          console.log('An error occurred:', error.error.message);
+        }
+      });
+    })
+  }
+
+  sendMessage(channel: string, message: string){
+    // Get the account info from the account service
+    this.account.getUserData().subscribe((userData) => {
+      // Create the URL for the put request
+      const url = backend_url + 'message';
+      
+      let newMessage = new MessageData();
+      newMessage.User = userData.Email;
+      newMessage.Channel = channel;
+      newMessage.Message = message;
+
+      // The HTTP put request
+      this.http.post(url, newMessage).subscribe({
+        error:(error) =>{ 
+          console.log('An error occurred:', error.error.message);
+        }
+      });
+    })
+  }
+
+  createChannel(users: string[]){
+    // Get the account info from the account service
+    this.account.getUserData().subscribe((userData) => {
+      // Create the URL for the put request
+      const url = backend_url + 'channels';
+      
+      // Add currrent user to the array
+      users.push(userData.Email);
+
+      let channelCreation = {
+        ID: 1,
+        Users: users
+      };
+
+      // The HTTP put request
+      this.http.post(url, channelCreation).subscribe({
         error:(error) =>{ 
           console.log('An error occurred:', error.error.message);
         }

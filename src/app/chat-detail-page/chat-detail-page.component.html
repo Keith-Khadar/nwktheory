@@ -1,0 +1,57 @@
+<div class="ion-page" id="chat-content">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>{{channelName}}</ion-title>
+    </ion-toolbar>
+      <ion-toolbar>
+          <ion-buttons slot="start">
+              <ion-button [routerLink]="['/Chat']" [queryParams]="{ direction: 'forward' }">
+                  <ion-icon name="chevron-back-outline" size="large"></ion-icon>
+              </ion-button>
+              <ion-title>
+                  {{GroupName}}
+              </ion-title>
+          </ion-buttons>
+        <ion-buttons>
+          <ion-searchbar color="light"></ion-searchbar>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-menu-button>
+            <ion-button>
+              <ion-icon name="settings-outline" size="large"></ion-icon>
+            </ion-button>
+          </ion-menu-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+  
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item *ngFor="let message of messages">
+          <ion-label>
+            {{message}}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    
+    </ion-content>
+  
+    <ion-footer>
+      <ion-item>
+          <ion-input [(ngModel)]="newMessage" placeholder="Type a message"></ion-input>
+          <ion-button (click)="sendMessage()">Send</ion-button>
+        </ion-item>
+    </ion-footer>
+</div>
+<ion-menu contentId="chat-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu Content</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-item *ngFor="let recipient of recipients">
+      <ion-label>{{recipient}}</ion-label>
+    </ion-item>
+  </ion-content>
+</ion-menu>

@@ -19,11 +19,13 @@ import { LoginComponent } from './login/login.component';
 // This is more sending https requests
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ChatDetailPageComponent } from './chat-detail-page/chat-detail-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
+    ChatDetailPageComponent,
   ],
   imports: [
     BrowserModule,

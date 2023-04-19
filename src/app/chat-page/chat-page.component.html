@@ -1,44 +1,75 @@
-<ion-header>
+<div class="ion-page">
+  <ion-header>
     <ion-toolbar color="primary">
       <ion-title>
         Chat
       </ion-title>
-
+    </ion-toolbar>
+  </ion-header>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons>
+        <ion-searchbar color="light"></ion-searchbar>
+      </ion-buttons>
       <ion-buttons slot="end">
-        <ion-button>
-            <ion-icon name="search"></ion-icon>
-        </ion-button>
-        <ion-button>
-            <ion-icon name="ellipsis-vertical"></ion-icon>
+        <ion-button id="create-chat" expand="block">
+          <ion-icon name="create-outline" size="large"></ion-icon>
         </ion-button>
       </ion-buttons>
-
     </ion-toolbar>
-</ion-header>
-<ion-content [fullscreen]="true">
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button>
-            <ion-icon name="chatbox-ellipses"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
-
-    <div class="ion-padding">
-        <ion-item>
-            <ion-avatar slot="start">
-                <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGpRx-LXxtShgx_s9AWDnnkHvYOLdGo6w3vg&usqp=CAU" />
-            </ion-avatar>
-            <ion-label>
-                <h2>Name</h2>
-                <p> <ion-icon class="read" name="checkmark-done"></ion-icon> There</p>
-            </ion-label>
-            <ion-label slot="end" class="ion-text-right">
-                <p>03-29-2023</p>
-                <p>&nbsp;</p>
-            </ion-label>
-        </ion-item>
-    </div>
-
-</ion-content>
+    <ion-toolbar>
+      <ion-segment value="all">
+        <ion-segment-button value="all">
+          <ion-label>All</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="favorites">
+          <ion-label>Favorites</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-header>
   
+  <ion-content [fullscreen]="true">
+      <div class="ion-padding">
+          <ion-item *ngFor="let channel of channels; index as i" routerLink="details" (click)="setCurrentChat(channel)">
+              <ion-avatar slot="start">
+                  <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGpRx-LXxtShgx_s9AWDnnkHvYOLdGo6w3vg&usqp=CAU" />
+              </ion-avatar>
+              <ion-label>
+                  <h2>{{channelNames[i]}}</h2>
+                  <p> <ion-icon class="read" name="checkmark-done"></ion-icon> There</p>
+              </ion-label>
+              <ion-label slot="end" class="ion-text-right">
+                  <p>03-29-2023</p>
+                  <p>&nbsp;</p>
+              </ion-label>
+          </ion-item>
+      </div>
+  </ion-content>
+</div>
+<ion-modal trigger="create-chat" (willDismiss)="onWillDismiss($event)">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="cancel()">Cancel</ion-button>
+        </ion-buttons>
+        <ion-title>Create A Chat</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item>
+          <ion-select aria-label="Recipients" placeholder="Select Recipients" [multiple]="true" *ngFor="let connection of connections" (ionChange)="handleChange($event)">
+            <ion-select-option value="{{connection}}">{{connection}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
   
   
