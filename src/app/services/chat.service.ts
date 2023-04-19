@@ -10,6 +10,7 @@ import { Observable, Subject } from 'rxjs';
 export class ChatService {
 
   private currentChat = '';
+  private channel: any;
   
   setSelectedChat(chat: string): void {
     this.currentChat = chat;
@@ -27,7 +28,7 @@ export class ChatService {
    }
 
    subscribe(channelName: string, eventName: string, callback: Function){
-    const channel = this.pusher.subscribe(channelName);
-    channel.bind(eventName, (data:any) => callback(data));
+    this.channel = this.pusher.subscribe(channelName);
+    this.channel.bind(eventName, (data:any) => callback(data));
    }
 }

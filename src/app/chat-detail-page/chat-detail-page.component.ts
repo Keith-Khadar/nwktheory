@@ -1,32 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChatService } from '../services/chat.service';
 import { HttpsService } from '../services/https.service';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-chat-detail-page',
   templateUrl: './chat-detail-page.component.html',
   styleUrls: ['./chat-detail-page.component.scss']
 })
-export class ChatDetailPageComponent {
+export class ChatDetailPageComponent implements OnInit {
   GroupName = ''
-  messages = [{
-    userPic: '#',
-    text: 'Hi'
-  }];
+  messages: string[] = [];
 
   newMessage = '';
+  channelName = '';
 
-  constructor(private chatService: ChatService, private https: HttpsService){ }
-
-  sendMessage(){
-    alert('sent!');
+  constructor(private chatService: ChatService, private https: HttpsService, private router: Router){ 
+    if(this.chatService.getSelectedChat() == ''){
+      router.navigate(['/Chat'])
+    }
   }
 
-  loadChat(): string{
-    let channelName = this.chatService.getSelectedChat();
-    this.chatService.subscribe(channelName, 'new-message', (message:string) => {
-      this.messages.push({userPic: "IDK", text: message})
+  sendMessage(){
+    this.https.sendMessage(this.chatService.getSelectedChat(),this.newMessage);
+    this.newMessage = '';
+  }
+
+  ngOnInit(){
+    this.channelName = this.chatService.getSelectedChat();
+    this.chatService.subscribe(this.channelName, 'new-message', (message:string) => {
+      this.messages.push(message);
     });
-    return channelName;
   }
 }

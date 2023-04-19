@@ -8,7 +8,6 @@ import { backend_url, User, UserData, ProfilePic, ConnectionData, ImageData, Mes
   providedIn: 'root'
 })
 export class HttpsService {
-
   constructor(private http: HttpClient, private account: AccountService) { }
 
   // Retrieve Information //
@@ -232,7 +231,7 @@ export class HttpsService {
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the put request
-      const url = backend_url + 'chat';
+      const url = backend_url + 'message';
       
       let newMessage = new MessageData();
       newMessage.User = userData.Email;
@@ -248,7 +247,7 @@ export class HttpsService {
     })
   }
 
-  createChannel(channel: string, users: string[]){
+  createChannel(users: string[]){
     // Get the account info from the account service
     this.account.getUserData().subscribe((userData) => {
       // Create the URL for the put request
@@ -258,7 +257,7 @@ export class HttpsService {
       users.push(userData.Email);
 
       let channelCreation = {
-        ID: channel,
+        ID: 1,
         Users: users
       };
 

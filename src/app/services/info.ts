@@ -1,5 +1,5 @@
 // Variables
-const backend_url = 'https://nwk.tehe.xyz:3000/';
+const backend_url = 'http://10.136.248.123:3000/';
 export {backend_url}
 
 
@@ -32,7 +32,7 @@ export interface Message{
 export const environment = {
     production: false,
     pusher: {
-      key: '1578492',
+      key: '37edea490ece53aa7ed1',
       cluster: 'mt1',
     },
   };

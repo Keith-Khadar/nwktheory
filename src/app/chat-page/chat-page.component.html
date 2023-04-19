@@ -61,10 +61,13 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      <ion-item>
-        <ion-label position="stacked">Recipients</ion-label>
-        <ion-input type="text" placeholder="Enter Chat Recipients' Emails!" [(ngModel)]="recipients"></ion-input>
-      </ion-item>
+      <ion-list>
+        <ion-item>
+          <ion-select aria-label="Recipients" placeholder="Select Recipients" [multiple]="true" *ngFor="let connection of connections" (ionChange)="handleChange($event)">
+            <ion-select-option value="{{connection}}">{{connection}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
     </ion-content>
   </ng-template>
 </ion-modal>

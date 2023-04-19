@@ -4,7 +4,10 @@ import { HttpsService } from '../services/https.service';
 
 import { IonModal } from '@ionic/angular';
 import { ChatService } from '../services/chat.service';
-import { Subject } from 'rxjs';
+
+import { Connection } from '../services/info';
+
+
 
 @Component({
   selector: 'app-chat-page',
@@ -12,19 +15,24 @@ import { Subject } from 'rxjs';
   styleUrls: ['./chat-page.component.scss']
 })
 export class ChatPageComponent {
-  recipients: string = "";
+  recipients: string [] = [];
 
 @ViewChild(IonModal) modal!: IonModal;
 
   messages: string[] = [];
-  channels: string[] = ["Test 1", "Test 2", "Joe Biden"];
+  channels: string[] = [];
   newChannel: string = "";
+
+  public connections: string[] = [];
 
   public currentChannel = '';
 
   constructor(private https: HttpsService, private chatService: ChatService) {
     this.https.getUser(false).subscribe((user) => {
-      //this.channels = user.Channels;
+      this.channels = user.Channels;
+      user.Connections.forEach((connection: Connection) => {
+        this.connections.push(connection.to);
+      });
       console.log(user.Channels);
     });
   }
@@ -34,6 +42,7 @@ export class ChatPageComponent {
   }
   confirm(){
     this.modal.dismiss(this.recipients, 'confirm');
+    this.https.createChannel(this.recipients);
   }
   onWillDismiss(event: Event){
     const ev = event as CustomEvent<OverlayEventDetail<string>>;
@@ -44,6 +53,11 @@ export class ChatPageComponent {
 
   setCurrentChat(current:string){
     this.chatService.setSelectedChat(current);
+  }
+
+  handleChange(ev: any) {
+    this.recipients = ev.target.value;
+    console.log(this.recipients);
   }
 
  
