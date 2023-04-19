@@ -463,6 +463,9 @@ func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
 	// Get POST body
 	json.NewDecoder(r.Body).Decode(&reqChannel)
 
+	// Change channel id
+	reqChannel.ID = randomChannelID()
+
 	// Check if chanel exists
 	err := s.store.InsertChannel(&reqChannel)
 
