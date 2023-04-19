@@ -6,7 +6,7 @@ type Channel struct {
 }
 
 func ValidateChannel(c *Channel) bool {
-	if c.ID != "" && len(c.Users) > 0 {
+	if c.ID != "" && len(c.Users) >= 2 {
 		return true
 	}
 	return false

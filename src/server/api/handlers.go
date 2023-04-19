@@ -148,7 +148,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	// Parameters from URL
 	queriedUpdateName := r.URL.Query().Get("name")
 
-	err := s.store.UpdateUser(email, queriedUpdateName, "")
+	err := s.store.UpdateUser(email, queriedUpdateName, "", "")
 
 	if err != nil {
 		// Return HTTP 404 if user does not exist in db
@@ -266,7 +266,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 		}
 
 		// Update user object with new profile picture path
-		s.store.UpdateUser(user.Email, "", finalImgPath)
+		s.store.UpdateUser(user.Email, "", finalImgPath, "")
 
 		// Print successful update to console
 		fmt.Printf("Profile picture update for %v || Type: PNG\n", user.Email)
@@ -308,7 +308,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 		}
 
 		// Update user object with new profile picture path
-		s.store.UpdateUser(user.Email, "", finalImgPath)
+		s.store.UpdateUser(user.Email, "", finalImgPath, "")
 
 		// Print successful update to console
 		fmt.Printf("Profile picture update for %v || Type: JPEG\n", user.Email)
@@ -475,6 +475,25 @@ func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
 
 		}
+	}
+
+	for _, queriedUserEmail := range reqChannel.Users {
+		user, err := s.store.GetUser(queriedUserEmail)
+
+		if err != nil {
+
+			// Return HTTP 404 if user does not exist in db
+			if strings.Contains(fmt.Sprint(err), "no documents") {
+				ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+
+			} else { // Catch all
+				ApiHttpError(w, err, http.StatusInternalServerError, "")
+			}
+			// Exit here if error
+			return
+		}
+
+		s.store.UpdateUser(user.Email, "", "", reqChannel.ID)
 	}
 }
 
