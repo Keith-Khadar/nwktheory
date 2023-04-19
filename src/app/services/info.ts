@@ -21,6 +21,15 @@ export interface Connection{
     to: string,
 }
 
+export interface Node {
+      id: string,
+      marker: {
+        symbol: string,
+        width: string,
+        height: string,
+      },
+}
+
 // Classes for storing data
 export class UserData implements User{
     Name: string;
@@ -35,6 +44,7 @@ export class UserData implements User{
         this.Connections =[];
     }
 }
+
 export class ConnectionData implements Connection{
     from: string;
     to: string;
@@ -44,6 +54,7 @@ export class ConnectionData implements Connection{
         this.to = "";
     }
 }
+
 export class ProfilePicData implements ProfilePic{
     ProfilePic: string;
     constructor(){
