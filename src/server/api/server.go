@@ -42,9 +42,9 @@ func (s *Server) Start() error {
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
-	// Get cert and key path
-	certPath := "/home/go-user/certs/cert.pem"
-	keyPath := "/home/go-user/certs/privkey.pem"
+	// // Get cert and key path
+	// certPath := "/home/go-user/certs/cert.pem"
+	// keyPath := "/home/go-user/certs/privkey.pem"
 
 	//Set up chat server
 
@@ -60,10 +60,11 @@ func (s *Server) Start() error {
 	router.HandleFunc("/chat", s.handleSendMessage).Methods("POST", "OPTIONS")
 	router.HandleFunc("/channels", s.handleCreateChannel).Methods("POST", "OPTIONS")
 	router.HandleFunc("/channels", s.handleGetChannel).Methods("GET", "OPTIONS")
+	router.HandleFunc("/message", s.handleSendMessage).Methods("POST", "OPTIONS")
 
 	// Static routes
 	router.PathPrefix("/static/images/").Handler(http.StripPrefix("/static/images/", http.FileServer(http.Dir("data/images"))))
 
 	// Serve web server
-	return http.ListenAndServeTLS(s.listenAddr, certPath, keyPath, handlers.CORS(originsOk, headersOk, methodsOk)(router))
+	return http.ListenAndServe(s.listenAddr, handlers.CORS(originsOk, headersOk, methodsOk)(router))
 }
