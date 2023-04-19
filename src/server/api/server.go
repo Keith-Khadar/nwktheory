@@ -60,6 +60,7 @@ func (s *Server) Start() error {
 	router.HandleFunc("/chat", s.handleSendMessage).Methods("POST", "OPTIONS")
 	router.HandleFunc("/channels", s.handleCreateChannel).Methods("POST", "OPTIONS")
 	router.HandleFunc("/channels", s.handleGetChannel).Methods("GET", "OPTIONS")
+	router.HandleFunc("/channels/{id}", s.handleGetChannelUsers).Methods("GET", "OPTIONS")
 	router.HandleFunc("/message", s.handleSendMessage).Methods("POST", "OPTIONS")
 
 	// Static routes

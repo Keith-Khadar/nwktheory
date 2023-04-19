@@ -517,3 +517,29 @@ func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(false)
 	}
 }
+
+func (s *Server) handleGetChannelUsers(w http.ResponseWriter, r *http.Request) {
+	LogTime()
+	fmt.Printf("Endpoint Hit: handleGetChannelUsers from %v\n", r.RemoteAddr)
+
+	vars := mux.Vars(r)
+
+	id := vars["id"]
+	if id != "" {
+		channel, err := s.store.GetChannel(id)
+
+		if err != nil {
+			// Invalid channel submission
+			if strings.Contains(fmt.Sprint(err), "invalid channel") {
+				ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
+
+			} else { // Catch all
+				ApiHttpError(w, err, http.StatusInternalServerError, "")
+
+			}
+		}
+
+		json.NewEncoder(w).Encode(channel.Users)
+	}
+
+}
