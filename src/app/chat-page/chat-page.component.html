@@ -63,8 +63,8 @@
     <ion-content class="ion-padding">
       <ion-list>
         <ion-item>
-          <ion-select aria-label="Recipients" placeholder="Select Recipients" [multiple]="true" *ngFor="let connection of connections" (ionChange)="handleChange($event)">
-            <ion-select-option value="{{connection}}">{{connection}}</ion-select-option>
+          <ion-select aria-label="Recipients" placeholder="Select Recipients" [multiple]="true" (ionChange)="handleChange($event)">
+            <ion-select-option *ngFor="let connection of connections" value="{{connection}}">{{connection}}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-list>
