@@ -145,7 +145,14 @@ func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string, 
 
 	// Update the user channels
 	if Channel != "" {
+		change := bson.M{"$push": bson.M{"channels": Channel}}
 
+		_, err = coll.UpdateOne(context.TODO(), filter, change)
+
+		// Check for errors
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

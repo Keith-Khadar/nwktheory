@@ -476,6 +476,25 @@ func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
 
 		}
 	}
+
+	for _, queriedUserEmail := range reqChannel.Users {
+		user, err := s.store.GetUser(queriedUserEmail)
+
+		if err != nil {
+
+			// Return HTTP 404 if user does not exist in db
+			if strings.Contains(fmt.Sprint(err), "no documents") {
+				ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+
+			} else { // Catch all
+				ApiHttpError(w, err, http.StatusInternalServerError, "")
+			}
+			// Exit here if error
+			return
+		}
+
+		s.store.UpdateUser(user.Email, "", "", reqChannel.ID)
+	}
 }
 
 func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {
