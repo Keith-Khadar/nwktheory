@@ -106,7 +106,7 @@ func (s *MongoStorage) DeleteUser(Email string) error {
 	return err
 }
 
-func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string) error {
+func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string, Channel string) error {
 	coll := s.Client.Database(s.DatabaseName).Collection(s.UserCollectionName)
 
 	// Select document with Email from function parameter
@@ -141,6 +141,11 @@ func (s *MongoStorage) UpdateUser(Email string, Name string, ProfilePic string) 
 		if err != nil {
 			return err
 		}
+	}
+
+	// Update the user channels
+	if Channel != "" {
+
 	}
 
 	return nil
@@ -243,6 +248,7 @@ func (s *MongoStorage) InsertChannel(Channel *types.Channel) error {
 			return errors.New("invalid channel")
 		}
 	}
+
 }
 
 func (s *MongoStorage) DropDB(Name string) error {

@@ -21,7 +21,7 @@ func TestGetUser(t *testing.T) {
 
 	// Create test user
 	var testUser *types.User = &types.User{
-		Name: "TestUser",
+		Name:  "TestUser",
 		Email: "test@test.com",
 	}
 
@@ -50,7 +50,7 @@ func TestInsertUser(t *testing.T) {
 
 	// Create test user
 	var testUser *types.User = &types.User{
-		Name: "TestUser",
+		Name:  "TestUser",
 		Email: "test@test.com",
 	}
 
@@ -86,7 +86,7 @@ func TestDeleteUser(t *testing.T) {
 
 	// Create test user
 	var testUser *types.User = &types.User{
-		Name: "TestUser",
+		Name:  "TestUser",
 		Email: "test@test.com",
 	}
 
@@ -122,8 +122,8 @@ func TestUpdateUser(t *testing.T) {
 
 	// Create test user
 	var testUser *types.User = &types.User{
-		Name: "TestUser",
-		Email: "test@test.com",
+		Name:       "TestUser",
+		Email:      "test@test.com",
 		ProfilePic: "/test/image.png",
 	}
 
@@ -132,31 +132,29 @@ func TestUpdateUser(t *testing.T) {
 
 	// Check if name can be changed
 	// Change name
-	s.UpdateUser(testUser.Email, "ChangedName", "")
+	s.UpdateUser(testUser.Email, "ChangedName", "", "")
 
 	// Get user from store
 	returnedUser, _ := s.GetUser("test@test.com")
 
 	// Check if name was changed
-	assert.Equal(t, "ChangedName", returnedUser.Name) // Changed
+	assert.Equal(t, "ChangedName", returnedUser.Name)           // Changed
 	assert.Equal(t, "/test/image.png", returnedUser.ProfilePic) // NOT changed
-
 
 	// Check if ProfilePic path can be changed
 	// Change ProfilePic path
-	s.UpdateUser(testUser.Email, "", "/changed/image.png")
+	s.UpdateUser(testUser.Email, "", "/changed/image.png", "")
 
 	// Get user from store
 	returnedUser, _ = s.GetUser("test@test.com")
 
 	// Check if ProfilePic path was changed
-	assert.Equal(t, "ChangedName", returnedUser.Name) // NOT changed
+	assert.Equal(t, "ChangedName", returnedUser.Name)              // NOT changed
 	assert.Equal(t, "/changed/image.png", returnedUser.ProfilePic) // Changed
-
 
 	// Check if UpdateUser works when all parameters are used at once
 	// Change name and ProfilePic path
-	s.UpdateUser(testUser.Email, "FinalName", "/final/path")
+	s.UpdateUser(testUser.Email, "FinalName", "/final/path", "")
 
 	// Get user from store
 	returnedUser, _ = s.GetUser("test@test.com")
@@ -176,30 +174,30 @@ func TestInsertConnection(t *testing.T) {
 
 	// Delete old testing store
 	s.DropDB("testing")
-	
+
 	// Create test users
 	var userJim *types.User = &types.User{
-		Name: "Jim",
-		Email: "jim@test.com",
-		ProfilePic: "/test/jim.png",
+		Name:        "Jim",
+		Email:       "jim@test.com",
+		ProfilePic:  "/test/jim.png",
 		Connections: []types.Connection{},
 	}
 
 	var userMartha *types.User = &types.User{
-		Name: "Martha",
-		Email: "martha@test.com",
-		ProfilePic: "/test/martha.png",
+		Name:        "Martha",
+		Email:       "martha@test.com",
+		ProfilePic:  "/test/martha.png",
 		Connections: []types.Connection{},
 	}
 
 	// Create connection object
 	var jimToMarthaConn *types.Connection = &types.Connection{
-		SourceUser: "jim@test.com",
+		SourceUser:      "jim@test.com",
 		DestinationUser: "martha@test.com",
 	}
 
 	var mirrorConn *types.Connection = &types.Connection{
-		SourceUser: "martha@test.com",
+		SourceUser:      "martha@test.com",
 		DestinationUser: "jim@test.com",
 	}
 
@@ -233,27 +231,27 @@ func TestDeleteConnection(t *testing.T) {
 
 	// Create test users
 	var userJim *types.User = &types.User{
-		Name: "Jim",
-		Email: "jim@test.com",
-		ProfilePic: "/test/jim.png",
+		Name:        "Jim",
+		Email:       "jim@test.com",
+		ProfilePic:  "/test/jim.png",
 		Connections: []types.Connection{},
 	}
 
 	var userMartha *types.User = &types.User{
-		Name: "Martha",
-		Email: "martha@test.com",
-		ProfilePic: "/test/martha.png",
+		Name:        "Martha",
+		Email:       "martha@test.com",
+		ProfilePic:  "/test/martha.png",
 		Connections: []types.Connection{},
 	}
 
 	// Create connection object
 	var jimToMarthaConn *types.Connection = &types.Connection{
-		SourceUser: "jim@test.com",
+		SourceUser:      "jim@test.com",
 		DestinationUser: "martha@test.com",
 	}
 
 	var mirrorConn *types.Connection = &types.Connection{
-		SourceUser: "martha@test.com",
+		SourceUser:      "martha@test.com",
 		DestinationUser: "jim@test.com",
 	}
 
@@ -299,7 +297,7 @@ func TestGetChannel(t *testing.T) {
 
 	// Create test channel
 	var testChannel *types.Channel = &types.Channel{
-		ID: "123456789",
+		ID:    "123456789",
 		Users: []string{"jim@test.com", "martha@test.com"},
 	}
 
