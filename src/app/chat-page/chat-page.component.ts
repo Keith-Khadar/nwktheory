@@ -3,6 +3,8 @@ import { Component, ViewChild } from '@angular/core';
 import { HttpsService } from '../services/https.service';
 
 import { IonModal } from '@ionic/angular';
+import { ChatService } from '../services/chat.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-chat-page',
@@ -10,32 +12,38 @@ import { IonModal } from '@ionic/angular';
   styleUrls: ['./chat-page.component.scss']
 })
 export class ChatPageComponent {
+  recipients: string = "";
+
 @ViewChild(IonModal) modal!: IonModal;
 
-
   messages: string[] = [];
-  channels: string[] = [];
-  message: string = "is gaming";
+  channels: string[] = ["Test 1", "Test 2", "Joe Biden"];
+  newChannel: string = "";
 
-  constructor(private https: HttpsService) {
+  public currentChannel = '';
+
+  constructor(private https: HttpsService, private chatService: ChatService) {
     this.https.getUser(false).subscribe((user) => {
-      this.channels = user.Channels;
+      //this.channels = user.Channels;
       console.log(user.Channels);
     });
-    this.https.createChannel("test2", ["stalkurmom@gmail.com"] );
   }
 
   cancel(){
     this.modal.dismiss(null, 'cancel');
   }
   confirm(){
-    this.modal.dismiss(null, 'confirm');
+    this.modal.dismiss(this.recipients, 'confirm');
   }
   onWillDismiss(event: Event){
     const ev = event as CustomEvent<OverlayEventDetail<string>>;
     if(ev.detail.role === 'confirm'){
-      this.message = `Hello, ${ev.detail.data}!`
+      this.newChannel = `${ev.detail.data}`
     }
+  }
+
+  setCurrentChat(current:string){
+    this.chatService.setSelectedChat(current);
   }
 
  

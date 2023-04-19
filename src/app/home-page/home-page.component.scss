@@ -1,3 +1,7 @@
 ion-content {
   --overflow: hidden;
 }
+
+.disable-pinch-zoom{
+  touch-action: none;
+}

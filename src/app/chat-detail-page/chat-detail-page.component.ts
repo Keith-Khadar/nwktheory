@@ -8,7 +8,7 @@ import { HttpsService } from '../services/https.service';
   styleUrls: ['./chat-detail-page.component.scss']
 })
 export class ChatDetailPageComponent {
-  GroupName = 'Test'
+  GroupName = ''
   messages = [{
     user: 'Jesus',
     text: 'Hi'
@@ -16,10 +16,10 @@ export class ChatDetailPageComponent {
 
   newMessage = '';
 
-  constructor(private chatService: ChatService, private https: HttpsService){
+  constructor(public chatService: ChatService, private https: HttpsService){
     this.chatService.subscribe('messages', 'new-message', (message:string) => {
     this.messages.push({user: "IDK", text: message})
-  })
+  });
   }
 
   sendMessage(){

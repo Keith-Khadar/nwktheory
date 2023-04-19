@@ -1,12 +1,24 @@
 import { Injectable } from '@angular/core';
 import { environment } from './info';
 import Pusher from 'pusher-js';
+import { Observable, Subject } from 'rxjs';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
+
+  private currentChat = '';
+  
+  setSelectedChat(chat: string): void {
+    this.currentChat = chat;
+  }
+
+  getSelectedChat(): string {
+    return this.currentChat;
+  }
+
   private pusher: Pusher;
   constructor() {
     this.pusher = new Pusher(environment.pusher.key, {
