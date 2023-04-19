@@ -37,6 +37,15 @@ export const environment = {
     },
   };
 
+export interface Node {
+      id: string,
+      marker: {
+        symbol: string,
+        width: string,
+        height: string,
+      },
+}
+
 // Classes for storing data
 export class UserData implements User{
     Name: string;
@@ -53,6 +62,7 @@ export class UserData implements User{
         this.Channels = [];
     }
 }
+
 export class ConnectionData implements Connection{
     from: string;
     to: string;
@@ -62,6 +72,7 @@ export class ConnectionData implements Connection{
         this.to = "";
     }
 }
+
 export class MessageData implements Message{
     User: string;
     Channel: string;

@@ -79,9 +79,9 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	// No parameters given return full user struct with all data
 	if nameParam == "" && emailParam == "" && profilePicParam == "" &&
 		connectionParam == "" {
-			json.NewEncoder(w).Encode(user)
-			return
-		}
+		json.NewEncoder(w).Encode(user)
+		return
+	}
 
 	// Return partial data based on params
 	json.NewEncoder(w).Encode(newUser)
@@ -100,7 +100,6 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	err := s.store.InsertUser(&user)
 
 	if err != nil {
-
 		// Invalid user submission
 		if strings.Contains(fmt.Sprint(err), "invalid user") {
 			ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
@@ -149,7 +148,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	// Parameters from URL
 	queriedUpdateName := r.URL.Query().Get("name")
 
-	err := s.store.UpdateUser(email, queriedUpdateName, "")
+	err := s.store.UpdateUser(email, queriedUpdateName, "", "")
 
 	if err != nil {
 		// Return HTTP 404 if user does not exist in db
@@ -204,7 +203,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 	// Determine image type
 	dataTypeStartIndex := strings.Index(string(image), ":")
 	dataTypeEndIndex := strings.Index(string(image), ";")
-	imageType := string(image[dataTypeStartIndex + 1:dataTypeEndIndex])
+	imageType := string(image[dataTypeStartIndex+1 : dataTypeEndIndex])
 
 	// Check if data string is properly formated
 	// Size 7 is for "image/x" with x being a 1 character file extension
@@ -267,7 +266,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 		}
 
 		// Update user object with new profile picture path
-		s.store.UpdateUser(user.Email, "", finalImgPath)
+		s.store.UpdateUser(user.Email, "", finalImgPath, "")
 
 		// Print successful update to console
 		fmt.Printf("Profile picture update for %v || Type: PNG\n", user.Email)
@@ -309,7 +308,7 @@ func (s *Server) handleSetUserProfilePic(w http.ResponseWriter, r *http.Request)
 		}
 
 		// Update user object with new profile picture path
-		s.store.UpdateUser(user.Email, "", finalImgPath)
+		s.store.UpdateUser(user.Email, "", finalImgPath, "")
 
 		// Print successful update to console
 		fmt.Printf("Profile picture update for %v || Type: JPEG\n", user.Email)
@@ -460,26 +459,46 @@ func (s *Server) handleCreateChannel(w http.ResponseWriter, r *http.Request) {
 
 	// Create channel object
 	var reqChannel types.Channel
-	
+
 	// Get POST body
 	json.NewDecoder(r.Body).Decode(&reqChannel)
 
+	// Change channel id
+	reqChannel.ID = randomChannelID()
+
 	// Check if chanel exists
-	channel, err := s.store.GetChannel(reqChannel.ID)
+	err := s.store.InsertChannel(&reqChannel)
 
 	if err != nil {
-		// Return HTTP 404 if user does not exist in db
-		if strings.Contains(fmt.Sprint(err), "no documents") {
-			ApiHttpError(w, err, http.StatusNotFound, "Channel does not exist!")
+		// Invalid channel submission
+		if strings.Contains(fmt.Sprint(err), "invalid channel") {
+			ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
 
 		} else { // Catch all
 			ApiHttpError(w, err, http.StatusInternalServerError, "")
+
 		}
-		// Exit here if error
-		return
 	}
 
-	s.store.InsertChannel(channel)
+	for _, queriedUserEmail := range reqChannel.Users {
+		user, err := s.store.GetUser(queriedUserEmail)
+
+		if err != nil {
+
+			// Return HTTP 404 if user does not exist in db
+			if strings.Contains(fmt.Sprint(err), "no documents") {
+				ApiHttpError(w, err, http.StatusNotFound, "User does not exist!")
+
+			} else { // Catch all
+				ApiHttpError(w, err, http.StatusInternalServerError, "")
+			}
+			// Exit here if error
+			break
+		} else {
+			s.store.UpdateUser(user.Email, "", "", reqChannel.ID)
+		}
+	}
+	return
 }
 
 func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {
@@ -497,4 +516,30 @@ func (s *Server) handleGetChannel(w http.ResponseWriter, r *http.Request) {
 	} else {
 		json.NewEncoder(w).Encode(false)
 	}
+}
+
+func (s *Server) handleGetChannelUsers(w http.ResponseWriter, r *http.Request) {
+	LogTime()
+	fmt.Printf("Endpoint Hit: handleGetChannelUsers from %v\n", r.RemoteAddr)
+
+	vars := mux.Vars(r)
+
+	id := vars["id"]
+	if id != "" {
+		channel, err := s.store.GetChannel(id)
+
+		if err != nil {
+			// Invalid channel submission
+			if strings.Contains(fmt.Sprint(err), "invalid channel") {
+				ApiHttpError(w, err, http.StatusUnprocessableEntity, "")
+
+			} else { // Catch all
+				ApiHttpError(w, err, http.StatusInternalServerError, "")
+
+			}
+		}
+
+		json.NewEncoder(w).Encode(channel.Users)
+	}
+
 }
