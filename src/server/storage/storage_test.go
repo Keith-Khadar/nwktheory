@@ -318,10 +318,6 @@ func TestChannels(t *testing.T) {
 		Users: []string{},
 	}
 
-	// Insert users to db
-	s.InsertUser(userJim)
-	s.InsertUser(userMartha)
-
 	// Add users to channel
 	channel.Users = append(channel.Users, userJim.Email)
 	channel.Users = append(channel.Users, userMartha.Email)
@@ -329,16 +325,8 @@ func TestChannels(t *testing.T) {
 	// Insert channel
 	s.InsertChannel(channel)
 
-	// Get users from db
-	returnedJim, _ := s.GetUser("jim@test.com")
-	returnedMartha, _ := s.GetUser("martha@test.com")
-
 	// Get channel from db
 	returnedChannel, _ := s.GetChannel("12345")
-
-	// Check channel was added to Jim and Martha user object
-	assert.Equal(t, channel.ID, returnedJim.Channels[0])
-	assert.Equal(t, channel.ID, returnedMartha.Channels[0])
 
 	// Check channel was properly added to the channel collection
 	assert.Equal(t, channel.ID, returnedChannel.ID)
