@@ -28,7 +28,7 @@
    - Tabs: This displays the tabs that will be shown at the bottom of the app
    - User-profile: This displays the user's profile card (nothing is shown here because this data is collected from the backend)
 ## Frontend Cypress Test
-   This is an E2E test that goes through the process of signing up for an account and logging into an account through Auth0. The test goes through the process of signing up for an account first. If there is already an account, the test will end, otherwise it will display the home page then end. The second E2E test goes through the process of logging in. It will log in through Auth0 then check that all the tabs work. Then it will add a connection. Lastly it will log out.
+   This is an E2E test that goes through the process of signing up for an account and logging into an account through Auth0. The test goes through the process of signing up for an account first. If there is already an account, the test will end, otherwise it will display the home page then end. The second E2E test goes through the process of logging in. It will log in through Auth0 then check that all the tabs work. Then it will add a connection. It will then click on a node in the graph to bring up a modal with user details. It then clicks on the chat tab. Lastly it will log out.
 
 # Backend Unit Tests
 ## Storage Tests
