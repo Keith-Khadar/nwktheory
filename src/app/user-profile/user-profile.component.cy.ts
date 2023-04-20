@@ -1,5 +1,3 @@
-import { MessageService } from './../message.service';
-import { HttpErrorHandler } from './../http-error-handler.service';
 import { PhotoService } from './../services/photo.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UserProfileComponent } from './user-profile.component'
@@ -20,7 +18,7 @@ describe('ProfilePageComponent', () => {
             redirect_uri: window.location.origin
           }
         })],
-      providers: [HttpClient, PhotoService, HttpErrorHandler, MessageService, AuthService]
+      providers: [HttpClient, PhotoService, AuthService]
      })
   })
 })

@@ -9,10 +9,6 @@ import { PhotoService } from '../services/photo.service';
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss']
 })
-
-
-
-
 export class UserProfileComponent implements OnInit{
 
   constructor(public photoService: PhotoService, private https: HttpsService, public account: AccountService) {}
