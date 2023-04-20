@@ -18,6 +18,7 @@
     - Added compatability with PNG and JPEG image formats
     - Added paramater requests for GET users request allowing for partial data requests. 
     - Added more options for the update user request allowing for name, email, and profile picture path updates.
+    - Added database storage to keep tracks of chat channels users are a part of and what users have access to those channels
 
 # Frontend Unit Tests
    - Chat page: This displays the chat page. This now shows the skeleton of what the chat page will look like (this will be exapnded upon next sprint). 
@@ -39,6 +40,7 @@
   - Test get second user by email: Test the infomration of retrieved second user is as expected through the GetUserByEmail() function.
   - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function after a new profile pic is added.
   - Test get second user by email: Test the infomration of retrieved second user is as expected through the GetUserByEmail() function after a new profile pic is added.
+  - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function after a new channel is added.
  
 # User Controls
 
@@ -70,6 +72,30 @@
 }
 ```
 
+## Channel Struct:
+
+```json
+{
+	  "ID": "example: 1928394"
+	  "Users": 
+    [
+        "user1@example.com",
+        "user2@example.com"
+    ]
+    
+}
+```
+
+## Message Struct:
+
+```json
+{
+	"User": "user@example.com",
+	"Channel": "example: 12932831",
+	"Message": "example: 'Hello'"
+}
+```
+
 ## Formating Information:
 Path variables will be displayed as {variable} in a path and should be replaced with the desired information.
 
@@ -89,6 +115,21 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
 
 - **Example:** http://localhost:3000/users/{email}?name=true&email=true
+
+#### GET /channels
+- **What it does:** Return one channel and its data identified by its ID
+- **Note:** Requested channel should exist in the database. Channel has to be retrieved using a parameter storing the channel ID.
+- **Parameters:** id
+- **Responses:**
+  - True: Returns true if the requested channel exists in the database.
+  - False: Returns false if the requested channel does not exist in the database.
+
+#### GET /channels{id} 
+- **What it does:** Return the list of users in the specified channel through its ID
+- **Note:** Requested channel should exist in the database. Channel has to be retrieved using its ID.
+- **Responses:**
+  - 422 Unprocessable Entity: Returned when the body of the GET request does not meet the minimum data requirements for a channel (See requirements section above). Or the JSON in POST request body has an error.
+  - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
 
 #### Getting Images
 - Images are accessible via link at http://{address}:{port}/static/images/{file_name}
@@ -120,6 +161,22 @@ Path variables will be displayed as {variable} in a path and should be replaced 
   - 422 Unprocessable Entity: Returned when the body of the POST request does not meet the minimum data requirements for creating a connection (See requirements section above). Or the JSON in POST request body has an error.
   - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
 
+#### POST /message
+- **What it does:** Sends a message
+- **Requirements:** Message must contain the user that is sending the message and the channel the message is sent in
+- **Note:** Message data should follow the message struct format above
+- **Responses:**
+  - 404 Not Found: Returned when the requested user to send the message does not exist.
+  - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
+
+#### POST /channels
+- **What it does:** Create a new message channel
+- **Requirements:** Channel must have an ID to identify and must have at least one user in the channel
+- **Note:** Channel data does in the body of the HTTP request and follows the channel struct format above
+- **Responses:**
+  - 404 Not Found: Returned when the requested user to add to the channel does not exist.
+  - 422 Unprocessable Entity: Returned when the body of the POST request does not meet the minimum data requirements for creating a channel (See requirements section above). Or the JSON in POST request body has an error.
+  - 500 Internal Server Error: Returned for any error not specified above. See backend console log for more details.
 
 ## Delete Information:
 
