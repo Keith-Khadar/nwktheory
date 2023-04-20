@@ -287,27 +287,60 @@ func TestDeleteConnection(t *testing.T) {
 	s.DropDB("testing")
 }
 
-func TestGetChannel(t *testing.T) {
-
+func TestChannels(t *testing.T) {
+	
 	// Create storage
 	s := NewMongoStorage("testing", "users", "channels")
 
 	// Delete old testing store
 	s.DropDB("testing")
 
-	// Create test channel
-	var testChannel *types.Channel = &types.Channel{
-		ID:    "123456789",
-		Users: []string{"jim@test.com", "martha@test.com"},
+	// Create test users
+	var userJim *types.User = &types.User{
+		Name:        "Jim",
+		Email:       "jim@test.com",
+		ProfilePic:  "/test/jim.png",
+		Connections: []types.Connection{},
+		Channels:   []string{},
 	}
 
-	// Insert channel to db
-	s.InsertChannel(testChannel)
+	var userMartha *types.User = &types.User{
+		Name:        "Martha",
+		Email:       "martha@test.com",
+		ProfilePic:  "/test/martha.png",
+		Connections: []types.Connection{},
+		Channels:   []string{},
+	}
+
+	// Create channel object
+	var channel *types.Channel = &types.Channel{
+		ID: "12345",
+		Users: []string{},
+	}
+
+	// Insert users to db
+	s.InsertUser(userJim)
+	s.InsertUser(userMartha)
+
+	// Add users to channel
+	channel.Users = append(channel.Users, userJim.Email)
+	channel.Users = append(channel.Users, userMartha.Email)
+
+	// Insert channel
+	s.InsertChannel(channel)
+
+	// Get users from db
+	returnedJim, _ := s.GetUser("jim@test.com")
+	returnedMartha, _ := s.GetUser("martha@test.com")
 
 	// Get channel from db
-	returnedChannel, _ := s.GetChannel("123456789")
+	returnedChannel, _ := s.GetChannel("12345")
 
-	// Check if channel was returned
-	assert.Equal(t, testChannel.ID, returnedChannel.ID)
-	assert.ElementsMatch(t, testChannel.Users, returnedChannel.Users)
+	// Check channel was added to Jim and Martha user object
+	assert.Equal(t, channel.ID, returnedJim.Channels[0])
+	assert.Equal(t, channel.ID, returnedMartha.Channels[0])
+
+	// Check channel was properly added to the channel collection
+	assert.Equal(t, channel.ID, returnedChannel.ID)
+	assert.ElementsMatch(t, channel.Users, returnedChannel.Users)
 }
