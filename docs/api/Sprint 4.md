@@ -35,12 +35,15 @@
   - Added test for the expanded update user function
   - Added a test for deleting user connections for the database
   - Added a test for creating user connections in the database
+  - Added a test for creating and verifying channels in the database
 ## Backend Postman Tests
   - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function.
   - Test get second user by email: Test the infomration of retrieved second user is as expected through the GetUserByEmail() function.
   - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function after a new profile pic is added.
   - Test get second user by email: Test the infomration of retrieved second user is as expected through the GetUserByEmail() function after a new profile pic is added.
   - Test get user by email: Test the information of retrieved user is as expected through the GetUserByEmail() function after a new channel is added.
+  - Test insert channel: Test the ability to add channels to the database collection
+  - Test get channel: Test to check that channels can be retrieved from the server and that 
  
 # User Controls
 
