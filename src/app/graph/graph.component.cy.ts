@@ -1,6 +1,8 @@
 import { GraphComponent } from './graph.component'
 import { IonicModule } from '@ionic/angular'
 import { AuthService, AuthModule } from '@auth0/auth0-angular';
+import { HttpsService } from '../services/https.service';
+
 
 describe('GraphComponent', () => {
   it('mounts', () => {
